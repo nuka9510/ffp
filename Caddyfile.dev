@@ -1,0 +1,71 @@
+{
+  debug
+
+  log {
+    output file ./logs/frankenphp-server.log
+
+    format console {
+      level_format upper
+    }
+
+    level DEBUG
+  }
+
+  log frankenphp_file {
+    include frankenphp http.handlers.php
+
+    output file ./logs/frankenphp-application.log
+
+    format console {
+      level_format upper
+    }
+
+    level DEBUG
+  }
+
+  log frankenphp_stdout {
+    include frankenphp http.handlers.php
+
+    output stdout
+
+    level DEBUG
+  }
+}
+
+:8081 {
+  root * .
+
+  encode zstd gzip
+
+  @forbidden {
+    path /.vscode/* /.git/* /logs/* /Caddyfile* *.php
+  }
+
+  @statics {
+    path /assets/*
+  }
+  
+  handle @forbidden {
+    respond @forbidden "Access Denied" 403
+  }
+
+  handle @statics {
+    file_server
+  }
+
+  handle {
+    rewrite /system/index.php?{query}
+
+    php_server {
+      env FRANKENPHP_PROFILE dev
+      env FRANKENPHP_INDEX index.php
+      env FRANKENPHP_APPLICATION App
+
+      worker {
+        file ./system/index.php
+        num 4
+        watch
+      }
+    }
+  }
+}
