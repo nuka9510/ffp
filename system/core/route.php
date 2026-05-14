@@ -1,4 +1,6 @@
 <?php
+  namespace FPW\Core;
+
   class Route {
     private static $routes = array(
       'GET' => array(),
@@ -8,6 +10,9 @@
       'DELETE' => array()
     );
 
-    public function __construct() {}
+    /**
+     * @param  App $app
+     */
+    public static function route($app) {}
   }
 ?>

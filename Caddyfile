@@ -1,34 +1,26 @@
-# env
-## scheme - 서버 프로토콜 스킴
-## host - 서버 호스트명
-## port - 서버 포트
-## profile - 서버 실행 Profile [dev, prod]
-## index - 서버 실행 파일 (BootStrap 클래스를 상속한 객체가 있는 파일)
-## app - 서버 실행 클래스 (BootStrap 클래스를 상속한 객체)
-## server_log - 서버 기본 로그파일 경로
-## app_log - frankenphp, php 로그파일 경로
+{
+  {$APP_DEBUG}
 
-(prod_log) {
   log { # 서버 기본 로그 (파일)
-    output file {$server_log:./logs/frankenphp-server.log} # 로그파일 경로
+    output file {$APP_SERVER_LOG:./logs/frankenphp-server.log}
 
     format console {
       level_format upper
     }
 
-    level INFO
+    level {$APP_LOG_LEVEL:INFO}
   }
 
   log frankenphp_file { # frankenphp, php 로그 (파일)
     include frankenphp http.handlers.php
 
-    output file {$app_log:./logs/frankenphp-application.log} # 로그파일 경로
+    output file {$APP_FRANKENPHP_LOG:./logs/frankenphp-application.log}
 
     format console {
       level_format upper
     }
 
-    level INFO
+    level {$APP_LOG_LEVEL:INFO}
   }
 
   log frankenphp_stdout { # frankenphp, php 로그 (STDOUT)
@@ -36,69 +28,16 @@
 
     output stdout
 
-    level INFO
+    level {$APP_LOG_LEVEL:INFO}
   }
 
-  servers {$scheme}{$host}:{$port:8081} {
+  servers {$APP_SCHEME}{$APP_HOST}:{$APP_PORT:8081} {
     trusted_proxies static private_ranges
     trusted_proxies_strict
   }
 }
 
-(prod_worker) {
-  worker {
-    file ./system/index.php
-    num 4 # 실행 할 워커 수
-  }
-}
-
-(dev_log) {
-  debug
-
-  log { # 서버 기본 로그 (파일)
-    output file {$server_log:./logs/frankenphp-server.log} # 로그파일 경로
-
-    format console {
-      level_format upper
-    }
-
-    level DEBUG
-  }
-
-  log frankenphp_file { # frankenphp, php 로그 (파일)
-    include frankenphp http.handlers.php
-
-    output file {$app_log:./logs/frankenphp-application.log} # 로그파일 경로
-
-    format console {
-      level_format upper
-    }
-
-    level DEBUG
-  }
-
-  log frankenphp_stdout { # frankenphp, php 로그 (STDOUT)
-    include frankenphp http.handlers.php
-
-    output stdout
-
-    level DEBUG
-  }
-}
-
-(dev_worker) {
-  worker {
-    file ./system/index.php
-    num 1 # 실행 할 워커 수
-    watch
-  }
-}
-
-{
-  import {$profile:prod}_log
-}
-
-{$scheme}{$host}:{$port:8081} {
+{$APP_SCHEME}{$APP_HOST}:{$APP_PORT:8081} {
   root * .
 
   encode zstd gzip
@@ -123,14 +62,11 @@
     rewrite /system/index.php?{query}
 
     php_server {
-      env FRANKENPHP_PROFILE {$profile:prod} # 서버 실행 Profile [dev, prod]
-      env FRANKENPHP_INDEX {$index:index.php} # 서버 실행 파일 (BootStrap 클래스를 상속한 객체가 있는 파일)
-      env FRANKENPHP_APPLICATION {$app:App} # 서버 실행 클래스 (BootStrap 클래스를 상속한 객체)
-      env FRANKENPHP_SCHEME {$scheme:http://} # 서버 프로토콜 스킴
-      env FRANKENPHP_HOST {$host:localhost} # 서버 호스트명
-      env FRANKENPHP_PORT {$port:8081} # 서버 포트
-
-      import {$profile:prod}_worker
+      worker {
+        file ./system/index.php
+        num {$APP_WORKER_NUM:1}
+        {$APP_WATCH}
+      }
     }
   }
 }
