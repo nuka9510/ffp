@@ -43,7 +43,7 @@
   encode zstd gzip
 
   @forbidden {
-    path /.vscode/* /.git/* /logs/* /Caddyfile* *.php
+    path /.vscode/* /.git/* /logs/* /Caddyfile* /.env* /composer.* /Dockerfile* /run-server.sh /.gitignore *.php
   }
 
   @statics {

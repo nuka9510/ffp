@@ -1,22 +1,37 @@
 <?php
-  $core_dir = new DirectoryIterator(__DIR__.'/core');
+  namespace FPW;
 
-  foreach ($core_dir as $cdi => $cd) {
-    if (
-      !$cd->isDir() &&
-      $cd->getExtension() === 'php'
-    ) { require_once($cd->getPathname()); }
+  $boot_flag = true;
+
+  try {
+    require_once(__DIR__.'/require.php');
+    require_once(__DIR__.'/app.php');
+  } catch (\Throwable $th) {
+    frankenphp_log($th->getMessage(), $th->getCode());
+
+    $boot_flag = false;
   }
 
-  $app = new FPW\Core\App();
 
-  $app->boot();
+  if ($boot_flag) {
+    $app = new \FPW\App();
 
-  if ($_SERVER['FRANKENPHP_WORKER']) {
-    while (frankenphp_handle_request([$app, 'requestHandle'])) {
-      gc_collect_cycles();
+    try {
+      $app->boot();
+    } catch (\Throwable $th) {
+      frankenphp_log($th->getMessage(), $th->getCode());
+
+      $boot_flag = false;
     }
-  } else { $app->requestHandle(); }
 
-  $app->shutdown();
+    if ($boot_flag) {
+      if ($_SERVER['FRANKENPHP_WORKER']) {
+        while (frankenphp_handle_request([$app, 'requestHandle'])) {
+          gc_collect_cycles();
+        }
+      } else { $app->requestHandle(); }
+    }
+
+    $app->shutdown();
+  }
 ?>

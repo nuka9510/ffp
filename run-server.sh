@@ -9,5 +9,5 @@ for i in "$@"; do
   esac
 done
 
-php composer.phar dump-autoload
+php-zts composer.phar dump-autoload
 frankenphp run --config Caddyfile --envfile "${ENV:-.env}"

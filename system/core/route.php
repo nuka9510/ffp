@@ -10,9 +10,6 @@
       'DELETE' => array()
     );
 
-    /**
-     * @param  App $app
-     */
-    public static function route($app) {}
+    public static function route(\FPW\App $app) { phpinfo(); }
   }
 ?>
