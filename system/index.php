@@ -4,10 +4,11 @@
   $boot_flag = true;
 
   try {
+    require_once(__DIR__.'/logger.php');
     require_once(__DIR__.'/require.php');
     require_once(__DIR__.'/app.php');
   } catch (\Throwable $th) {
-    frankenphp_log($th->getMessage(), $th->getCode());
+    Logger::log($th->getMessage(), $th->getCode());
 
     $boot_flag = false;
   }
@@ -19,7 +20,7 @@
     try {
       $app->boot();
     } catch (\Throwable $th) {
-      frankenphp_log($th->getMessage(), $th->getCode());
+      Logger::log($th->getMessage(), $th->getCode());
 
       $boot_flag = false;
     }

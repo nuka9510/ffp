@@ -2,7 +2,13 @@
   {$APP_DEBUG}
 
   log { # 서버 기본 로그 (파일)
-    output file {$APP_SERVER_LOG:./logs/frankenphp-server.log}
+    exclude http.handlers.rewrite
+
+    output file {$APP_SERVER_LOG:./logs/frankenphp-server.log} {
+      roll_size 2MiB
+      roll_at 00:00
+      roll_keep_for 168h
+    }
 
     format console {
       level_format upper
@@ -14,7 +20,11 @@
   log frankenphp_file { # frankenphp, php 로그 (파일)
     include frankenphp http.handlers.php
 
-    output file {$APP_FRANKENPHP_LOG:./logs/frankenphp-application.log}
+    output file {$APP_FRANKENPHP_LOG:./logs/frankenphp-application.log} {
+      roll_size 2MiB
+      roll_at 00:00
+      roll_keep_for 168h
+    }
 
     format console {
       level_format upper
@@ -62,6 +72,8 @@
     rewrite /system/index.php?{query}
 
     php_server {
+      env date.timezone {$APP_TIMEZONE:UTC}
+      
       worker {
         file ./system/index.php
         num {$APP_WORKER_NUM:1}

@@ -18,17 +18,23 @@
     private array $_db_driver;
 
     public function boot() {
-      frankenphp_log('boot frankenPHP project - '.($_SERVER['APP_SCHEME'] ?? 'http://').($_SERVER['APP_HOST'] ?? 'localhost').':'.($_SERVER['APP_PORT'] ?? 8081), FRANKENPHP_LOG_LEVEL_INFO);
+      Logger::info('project boot - '.($_SERVER['APP_SCHEME'] ?? 'http://').($_SERVER['APP_HOST'] ?? 'localhost').':'.($_SERVER['APP_PORT'] ?? 8081));
 
       try {
         $this->_db_driver = \FPW\Database\Config::getDriver();
+
+        \FPW\Core\Route::init();
       } catch (\Throwable $th) { throw $th; }
     }
 
-    public function requestHandle() { \FPW\Core\Route::route($this); }
+    public function requestHandle() {
+      \FPW\Logger::info("requestHandle - {$_SERVER['REQUEST_METHOD']} {$_SERVER['REQUEST_SCHEME']}://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}");
+
+      \FPW\Core\Route::route($this);
+    }
 
     public function shutdown() {
-      frankenphp_log('shutdown strap frankenPHP project', FRANKENPHP_LOG_LEVEL_INFO);
+      Logger::info('project shutdown');
     }
 
     public function getDBDriver(string $key = 'default'): \FPW\Interfaces\Database\Driver { return $this->_db_driver[$key]; }

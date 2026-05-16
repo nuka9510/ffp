@@ -60,14 +60,14 @@
     }
 
     /**
-     * @throws \FPW\Errors\DatabaseDriver
+     * @throws \FPW\Errors\Database\Driver
      */
     #[\Override]
     public function beginTransaction(\FPW\Enums\Database\Transaction $transactionMode): void {
       switch ($transactionMode) {
         case \FPW\Enums\Database\Transaction::R:
         case \FPW\Enums\Database\Transaction::W: $this->_transactionMode = $transactionMode; break;
-        default: throw new \FPW\Errors\DatabaseDriver('Invalid transaction type.');
+        default: throw new \FPW\Errors\Database\Driver('Invalid transaction type.');
       }
 
       $this->_pdo->beginTransaction();
@@ -77,7 +77,7 @@
     public function inTransaction(): bool { return $this->_pdo->inTransaction(); }
 
     /**
-     * @throws \PDOException|\FPW\Errors\DatabaseDriver
+     * @throws \PDOException|\FPW\Errors\Database\Driver
      */
     #[\Override]
     public function commit(): void {
@@ -85,13 +85,13 @@
         if ($this->inTransaction()) {
           if ($this->_pdo->commit()) {
             $this->_transactionMode = null;
-          } else { throw new \FPW\Errors\DatabaseDriver("Failed to commit PDO transaction."); }
+          } else { throw new \FPW\Errors\Database\Driver("Failed to commit PDO transaction."); }
         } else { $this->_transactionMode = null; }
       } catch (\Throwable $th) { throw $th; }
     }
 
     /**
-     * @throws \PDOException|\FPW\Errors\DatabaseDriver
+     * @throws \PDOException|\FPW\Errors\Database\Driver
      */
     #[\Override]
     public function rollback(): void {
@@ -99,7 +99,7 @@
         if ($this->inTransaction()) {
           if ($this->_pdo->rollBack()) {
             $this->_transactionMode = null;
-          } else { throw new \FPW\Errors\DatabaseDriver("Failed to rollback PDO transaction."); }
+          } else { throw new \FPW\Errors\Database\Driver("Failed to rollback PDO transaction."); }
         } else { $this->_transactionMode = null; }
       } catch (\Throwable $th) { throw $th; }
     }
@@ -142,7 +142,7 @@
     }
 
     /**
-     * @throws \PDOException|\FPW\Errors\DatabaseDriver
+     * @throws \PDOException|\FPW\Errors\Database\Driver
      */
     #[\Override]
     public function select(?\FPW\Interfaces\Database\SelectOption $option = null): void {
@@ -152,7 +152,7 @@
     }
 
     /**
-     * @throws \PDOException|\FPW\Errors\DatabaseDriver
+     * @throws \PDOException|\FPW\Errors\Database\Driver
      */
     #[\Override]
     public function insert(): void {
@@ -162,7 +162,7 @@
     }
 
     /**
-     * @throws \PDOException|\FPW\Errors\DatabaseDriver
+     * @throws \PDOException|\FPW\Errors\Database\Driver
      */
     #[\Override]
     public function update(): void {
@@ -172,7 +172,7 @@
     }
 
     /**
-     * @throws \PDOException|\FPW\Errors\DatabaseDriver
+     * @throws \PDOException|\FPW\Errors\Database\Driver
      */
     #[\Override]
     public function delete(): void {
@@ -202,14 +202,14 @@
     }
 
     /**
-     * @throws \PDOException|\FPW\Errors\DatabaseDriver
+     * @throws \PDOException|\FPW\Errors\Database\Driver
      */
     #[\Override]
     public function lastInsertId(?string $name = null): string {
       try {
         $id = $this->_pdo->lastInsertId($name);
 
-        if ($id === false) { throw new \FPW\Errors\DatabaseDriver('Failed to retrieve last insert ID.'); }
+        if ($id === false) { throw new \FPW\Errors\Database\Driver('Failed to retrieve last insert ID.'); }
 
         return $id;
       } catch (\Throwable $th) { throw $th; }
@@ -240,7 +240,7 @@
     }
 
     /**
-     * @throws \PDOException|\FPW\Errors\DatabaseDriver
+     * @throws \PDOException|\FPW\Errors\Database\Driver
      */
     protected function ____execute(): void {
       $sql = trim(join(' ', $this->_sql));
@@ -248,14 +248,14 @@
       try {
         $this->_stmt = $this->_pdo->prepare($sql);
 
-        if ($this->_stmt === false) { throw new \FPW\Errors\DatabaseDriver('Failed to create PDOStatement.', 100); }
+        if ($this->_stmt === false) { throw new \FPW\Errors\Database\Driver('Failed to create PDOStatement.', 100); }
 
         foreach ($this->_param as $k => &$v) {
-          if (!$this->_stmt->bindParam($k + 1, $v[0], $v[1])) { throw new \FPW\Errors\DatabaseDriver('Failed to bind parameter to PDOStatement.'); }
+          if (!$this->_stmt->bindParam($k + 1, $v[0], $v[1])) { throw new \FPW\Errors\Database\Driver('Failed to bind parameter to PDOStatement.'); }
         }
 
-        if (!$this->_stmt->execute()) { throw new \FPW\Errors\DatabaseDriver('Failed to execute PDOStatement'); }
-      } catch (\FPW\Errors\DatabaseDriver $th) {
+        if (!$this->_stmt->execute()) { throw new \FPW\Errors\Database\Driver('Failed to execute PDOStatement'); }
+      } catch (\FPW\Errors\Database\Driver $th) {
         switch ($th->getCode()) {
           case 100: $this->_stmt = null; break;
         }

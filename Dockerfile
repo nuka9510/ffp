@@ -1,4 +1,5 @@
 FROM dunglas/frankenphp
+ENV TZ=Asia/Seoul
 WORKDIR /app
 COPY . .
 RUN install-php-extensions pdo_mysql gd intl zip opcache

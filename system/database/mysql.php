@@ -21,7 +21,7 @@
 
     /**
      * @param null|\FPW\Enums\Database\Mysql\Option $option
-     * @throws \PDOException|\FPW\Errors\DatabaseDriver
+     * @throws \PDOException|\FPW\Errors\Database\Driver
      */
     #[\Override]
     public function select(?\FPW\Interfaces\Database\SelectOption $option = null): void {
