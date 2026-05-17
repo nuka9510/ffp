@@ -21,19 +21,16 @@
       }
     }
 
-    public static function route(\FPW\App $app): void {
+    public static function route(\FPW\App $app, \FPW\DTO\Request $req): void {
       try {
-        $method = \FPW\Enums\Route\Method::from($_SERVER['REQUEST_METHOD']);
-        $path = static::____convertPath(parse_url(urldecode($_SERVER['REQUEST_URI']), PHP_URL_PATH));
-        $paths = ($path === '') ? array() : explode('/', $path);
         $routes = array_filter(
-          static::$_routes[$method->value],
-          function ($r) use ($paths) { return $r['depth'] === count($paths); }
+          static::$_routes[$req->method->value],
+          function ($r) use ($req) { return $r['depth'] === count($req->paths); }
         );
         $route = null;
 
         foreach ($routes as $ri => $r) {
-          if (!$r['route']->match($paths)) { continue; }
+          if (!$r['route']->match($req->paths)) { continue; }
 
           $route = $r['route'];
 
@@ -41,8 +38,10 @@
         }
 
         if (isset($route)) {
-          $route->route($app, $paths);
-        } else { throw new \FPW\Errors\Route("Route not found. path: /{$path}"); }
+
+          $route->route($app, $req);
+
+        } else { throw new \FPW\Errors\Route("Route not found. path: /{$req->path}"); }
       } catch (\FPW\Errors\Route $th) {
         http_response_code(404);
 
@@ -51,11 +50,9 @@
     }
 
     public static function append(\FPW\Enums\Route\Method $method, string $path, callable $callback): \FPW\Core\Utils\Route {
-      static::$_routes[$method->value][$path]['route'] = new \FPW\Core\Utils\Route(static::____convertPath($path), $callback);
+      static::$_routes[$method->value][$path]['route'] = new \FPW\Core\Utils\Route(\FPW\Core\Utils\Route::convertPath($path), $callback);
 
       return static::$_routes[$method->value][$path]['route'];
     }
-
-    private static function ____convertPath(string $path): string { return preg_replace('/^\/|\/$/', '', $path); }
   }
 ?>

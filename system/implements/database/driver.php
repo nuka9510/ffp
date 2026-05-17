@@ -5,7 +5,7 @@
    * @property-read array{sql: string, param: mixed[]}|null $lastQuery
    */
   abstract class Driver implements \FPW\Interfaces\Database\Driver {
-    protected \FPW\DTO\Database\Config $_config;
+    protected \FPW\DTO\Database\Driver $_driver;
 
     protected \PDO $_pdo;
 
@@ -29,22 +29,22 @@
     protected ?array $_lastQuery = null;
 
     public function __get(string $name) {
-      switch ($name) {
-        case 'lastQuery': return $this->_lastQuery;
-        default: return;
-      }
+      return match ($name) {
+        'lastQuery' => $this->_lastQuery,
+        default => null,
+      };
     }
 
     #[\Override]
-    public function __construct(\FPW\DTO\Database\Config $config) { $this->_config = $config; }
+    public function __construct(\FPW\DTO\Database\Driver $driver) { $this->_driver = $driver; }
 
     /**
      * @throws \PDOException
      */
     #[\Override]
-    public function connect(): \PDO {
+    public function connect(): void {
       try {
-        return new \PDO($this->_config->dsn, $this->_config->username, $this->_config->password, $this->_config->options);
+        $this->_pdo = new \PDO($this->_driver->dsn, $this->_driver->username, $this->_driver->password, $this->_driver->options);
       } catch (\Throwable $th) { throw $th; }
     }
 
@@ -64,10 +64,15 @@
      */
     #[\Override]
     public function beginTransaction(\FPW\Enums\Database\Transaction $transactionMode): void {
-      switch ($transactionMode) {
-        case \FPW\Enums\Database\Transaction::R:
-        case \FPW\Enums\Database\Transaction::W: $this->_transactionMode = $transactionMode; break;
-        default: throw new \FPW\Errors\Database\Driver('Invalid transaction type.');
+      try {
+        $this->_transactionMode = match ($transactionMode) {
+          \FPW\Enums\Database\Transaction::R,
+          \FPW\Enums\Database\Transaction::W => $transactionMode,
+        };
+      } catch (\UnhandledMatchError $th) {
+        \FPW\Logger::error($th->getMessage());
+
+        throw new \FPW\Errors\Database\Driver('Invalid transaction type.');
       }
 
       $this->_pdo->beginTransaction();
@@ -256,9 +261,10 @@
 
         if (!$this->_stmt->execute()) { throw new \FPW\Errors\Database\Driver('Failed to execute PDOStatement'); }
       } catch (\FPW\Errors\Database\Driver $th) {
-        switch ($th->getCode()) {
-          case 100: $this->_stmt = null; break;
-        }
+        $this->_stmt = match ($th->getCode()) {
+          100 => null,
+          default => $this->_stmt,
+        };
 
         throw $th;
       } catch (\PDOException $th) {
@@ -293,14 +299,14 @@
     }
 
     private function ____getParamType(mixed $param): int {
-      switch (gettype($param)) {
-        case 'NULL': return \PDO::PARAM_NULL;
-        case 'boolean': return \PDO::PARAM_BOOL;
-        case 'integer': return \PDO::PARAM_INT;
-        case 'double':
-        case 'string':
-        default: return \PDO::PARAM_STR;
-      }
+      return match (gettype($param)) {
+        'NULL' => \PDO::PARAM_NULL,
+        'boolean' => \PDO::PARAM_BOOL,
+        'integer' => \PDO::PARAM_INT,
+        'double',
+        'string' => \PDO::PARAM_STR,
+        default => \PDO::PARAM_STR,
+      };
     }
   }
 ?>

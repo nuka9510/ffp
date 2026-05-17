@@ -7,7 +7,7 @@
    * @property-read null|string $password
    * @property-read null|array<int,mixed> $options
    */
-  class Config {
+  class Driver {
     private string $_dsn;
 
     private ?string $_username;
@@ -18,13 +18,13 @@
     private ?array $_options;
 
     public function __get(string $name) {
-      switch ($name) {
-        case 'dsn': return $this->_dsn;
-        case 'username': return $this->_username;
-        case 'password': return $this->_password;
-        case 'options': return $this->_options;
-        default: return;
-      }
+      return match ($name) {
+        'dsn' => $this->_dsn,
+        'username' => $this->_username,
+        'password' => $this->_password,
+        'options' => $this->_options,
+        default => null,
+      };
     }
 
     /**

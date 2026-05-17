@@ -1,5 +1,5 @@
 <?php
-  // \FPW\Database\Config::set(
+  // \FPW\Database\Driver::set(
   //   'default',
   //   array(
   //     'dsn' => 'mysql:host=localhost;dbname=test;charset=utf8mb4',

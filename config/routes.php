@@ -14,4 +14,12 @@
 
     phpinfo();
   });
+
+  Route::append(Method::GET, '/test/{id:int}', function ($id, $context, $request) {
+    Logger::debug(print_r($context, true));
+    Logger::debug(print_r($request, true));
+    Logger::debug("id: {$id}");
+
+    phpinfo();
+  });
 ?>

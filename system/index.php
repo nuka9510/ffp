@@ -1,7 +1,7 @@
 <?php
   namespace FPW;
 
-  $boot_flag = true;
+  $flag = true;
 
   try {
     require_once(__DIR__.'/logger.php');
@@ -10,11 +10,11 @@
   } catch (\Throwable $th) {
     Logger::log($th->getMessage(), $th->getCode());
 
-    $boot_flag = false;
+    $flag = false;
   }
 
 
-  if ($boot_flag) {
+  if ($flag) {
     $app = new \FPW\App();
 
     try {
@@ -22,10 +22,10 @@
     } catch (\Throwable $th) {
       Logger::log($th->getMessage(), $th->getCode());
 
-      $boot_flag = false;
+      $flag = false;
     }
 
-    if ($boot_flag) {
+    if ($flag) {
       if ($_SERVER['FRANKENPHP_WORKER']) {
         while (frankenphp_handle_request([$app, 'requestHandle'])) {
           gc_collect_cycles();

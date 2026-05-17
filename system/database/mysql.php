@@ -8,11 +8,11 @@
     private bool $_sLock;
 
     #[\Override]
-    public function __construct(\FPW\DTO\Database\Config $config) {
+    public function __construct(\FPW\DTO\Database\Driver $config) {
       parent::__construct($config);
 
       try {
-        $this->_pdo = $this->connect();
+        $this->connect();
       } catch (\Throwable $th) { throw $th; }
 
       $this->____setVersion();
@@ -27,16 +27,16 @@
     public function select(?\FPW\Interfaces\Database\SelectOption $option = null): void {
       try {
         if ($this->inTransaction()) {
-          switch ($this->_transactionMode) {
-            case \FPW\Enums\Database\Transaction::R: array_push($this->_sql, ($this->_sLock) ? 'FOR SHARE' : 'LOCK IN SHARE MODE'); break;
-            case \FPW\Enums\Database\Transaction::W: array_push($this->_sql, 'FOR UPDATE'); break;
-          }
+          match ($this->_transactionMode) {
+            \FPW\Enums\Database\Transaction::R => array_push($this->_sql, ($this->_sLock) ? 'FOR SHARE' : 'LOCK IN SHARE MODE'),
+            \FPW\Enums\Database\Transaction::W => array_push($this->_sql, 'FOR UPDATE'),
+          };
 
           if ($this->_sLock) {
-            switch ($option) {
-              case \FPW\Enums\Database\Mysql\Option::NOWAIT:
-              case \FPW\Enums\Database\Mysql\Option::SKIP_LOCKED: array_push($this->_sql, $option->value); break;
-            }
+            match ($option) {
+              \FPW\Enums\Database\Mysql\Option::NOWAIT,
+              \FPW\Enums\Database\Mysql\Option::SKIP_LOCKED => array_push($this->_sql, $option->value),
+            };
           }
         }
 
@@ -55,17 +55,13 @@
     }
 
     private function ____setSLock(): void {
-      switch ($this->_dbms) {
-        case 'mysql':
-          $this->_sLock = $this->_version[0] >= 8 &&
-                          $this->_version[1] >= 0;
-          break;
-        case 'mariaDB':
-          $this->_sLock = $this->_version[0] >= 10 &&
-                          $this->_version[1] >= 6 &&
-                          $this->_version[2] >= 0;
-          break;
-      }
+      $this->_sLock = match ($this->_dbms) {
+        'mysql' => $this->_version[0] >= 8 &&
+                    $this->_version[1] >= 0,
+        'mariaDB' => $this->_version[0] >= 10 &&
+                      $this->_version[1] >= 6 &&
+                      $this->_version[2] >= 0,
+      };
     }
   }
 ?>

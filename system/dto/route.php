@@ -5,7 +5,7 @@
    * @property-read null|string $path
    * @property-read null|string $name
    * @property-read null|string $regex
-   * @property-read null|'string'|'bool'|'boolean'|'int'|'integer'|'float'|'double' $type
+   * @property-read null|\FPW\Enums\Val\Type $type
    */
   class Route {
     private ?string $_path;
@@ -14,19 +14,16 @@
 
     private ?string $_regex;
 
-    /**
-     * @var null|'string'|'bool'|'boolean'|'int'|'integer'|'float'|'double'
-     */
-    private ?string $_type;
+    private ?\FPW\Enums\Val\Type $_type;
 
     public function __get(string $name) {
-      switch ($name) {
-        case 'path': return $this->_path;
-        case 'name': return $this->_name;
-        case 'regex': return $this->_regex;
-        case 'type': return $this->_type;
-        default: return;
-      }
+      return match ($name) {
+        'path' => $this->_path,
+        'name' => $this->_name,
+        'regex' => $this->_regex,
+        'type' => $this->_type,
+        default => null,
+      };
     }
 
     public function __construct(string $path) {
@@ -34,13 +31,12 @@
       $name = null;
       $type = null;
 
-      if (preg_match('/^{(<(?P<regex>.+)>)?(?P<name>\w+)(:(?P<type>string|bool(ean)?|int(eger)?|float|double))?}$/', $path, $matches)) {
+      if (preg_match('/^{(<(?P<regex>.+)>)?(?P<name>\w+)(:(?P<type>string|int(eger)?|float|double))?}$/', $path, $matches)) {
         $regex = $matches['regex'] ?? '';
         $name = $matches['name'];
-        $type = $matches['type'] ?? '';
+        $type = \FPW\Enums\Val\Type::tryFrom($matches['type'] ?? '');
 
         if ($regex === '') { $regex = null; }
-        if ($type === '') { $type = null; }
       } else { $this->_path = $path; }
 
       $this->_regex = $regex;
@@ -58,7 +54,7 @@
           $match = boolval(preg_match('/^'.$this->_regex.'$/', $path));
         } else { $match = true; }
 
-        if (isset($this->_type)) { $match = settype($path, $this->_type); }
+        if (isset($this->_type)) { $match = $this->_type->chkType($path); }
 
         return $match;
       } else { return false; }
