@@ -47,6 +47,7 @@
 
     public function requestHandle() {
       $req = new \FPW\DTO\Request();
+      $res = new \FPW\DTO\Response();
 
       \FPW\Core\Route::route($this, $req);
     }

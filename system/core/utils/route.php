@@ -130,6 +130,14 @@
       ) {
         $reflection = new \ReflectionMethod($callback[0], $callback[1]);
 
+        $params = array_map(
+          function ($p) { return $p->name; },
+          $reflection->getParameters()
+        );
+
+        if (in_array('context', $params)) { $args['context'] = $app; }
+        if (in_array('request', $params)) { $args['request'] = $req; }
+
         $reflection->invokeArgs(new $callback[0](array('context' => $app, 'request' => $req)), $args);
       }
     }
