@@ -1,11 +1,11 @@
 <?php
-  namespace FPW\Interfaces\Database;
+  namespace FFP\Interfaces\Database;
 
   /**
    * @property-read array{sql: string, param: mixed[]}|null $lastQuery
    */
   interface Driver {
-    public function __construct(\FPW\DTO\Database\Driver $driver);
+    public function __construct(\FFP\DTO\Database\Driver $driver);
 
     /**
      * @throws \PDOException
@@ -14,20 +14,22 @@
 
     public function isConnected(): bool;
 
+    public function reset(): void;
+
     /**
-     * @throws \FPW\Errors\Database\Driver
+     * @throws \FFP\Errors\Database\Driver
      */
-    public function beginTransaction(\FPW\Enums\Database\Transaction $transactionMode): void;
+    public function beginTransaction(\FFP\Enums\Database\Transaction $transactionMode): void;
 
     public function inTransaction(): bool;
 
     /**
-     * @throws \PDOException|\FPW\Errors\Database\Driver
+     * @throws \PDOException|\FFP\Errors\Database\Driver
      */
     public function commit(): void;
 
     /**
-     * @throws \PDOException|\FPW\Errors\Database\Driver
+     * @throws \PDOException|\FFP\Errors\Database\Driver
      */
     public function rollback(): void;
 
@@ -39,7 +41,7 @@
     /**
      * @param  null|array|array{mixed,int}[] $param
      */
-    public function where(\FPW\Enums\Database\Operator $operator, string $sql, ?array $param = null): void;
+    public function where(\FFP\Enums\Database\Operator $operator, string $sql, ?array $param = null): void;
 
     /**
      * @param  null|array|array{mixed,int}[] $param
@@ -47,22 +49,22 @@
     public function set(string $sql, ?array $param = null): void;
 
     /**
-     * @throws \PDOException|\FPW\Errors\Database\Driver
+     * @throws \PDOException|\FFP\Errors\Database\Driver
      */
-    public function select(?\FPW\Interfaces\Database\SelectOption $option = null): void;
+    public function select(?\FFP\Interfaces\Database\SelectOption $option = null): void;
 
     /**
-     * @throws \PDOException|\FPW\Errors\Database\Driver
+     * @throws \PDOException|\FFP\Errors\Database\Driver
      */
     public function insert(): void;
 
     /**
-     * @throws \PDOException|\FPW\Errors\Database\Driver
+     * @throws \PDOException|\FFP\Errors\Database\Driver
      */
     public function update(): void;
 
     /**
-     * @throws \PDOException|\FPW\Errors\Database\Driver
+     * @throws \PDOException|\FFP\Errors\Database\Driver
      */
     public function delete(): void;
 
@@ -77,7 +79,7 @@
     public function fetchAll(int $mode = \PDO::FETCH_ASSOC): array;
 
     /**
-     * @throws \PDOException|\FPW\Errors\Database\Driver
+     * @throws \PDOException|\FFP\Errors\Database\Driver
      */
     public function lastInsertId(?string $name = null): string;
 

@@ -1,5 +1,5 @@
 <?php
-  namespace FPW;
+  namespace FFP;
 
   $flag = true;
 
@@ -8,19 +8,19 @@
     require_once(__DIR__.'/require.php');
     require_once(__DIR__.'/app.php');
   } catch (\Throwable $th) {
-    Logger::log($th->getMessage(), $th->getCode());
+    \FFP\Logger::error($th->getMessage());
 
     $flag = false;
   }
 
 
   if ($flag) {
-    $app = new \FPW\App();
+    $app = new \FFP\App();
 
     try {
       $app->boot();
     } catch (\Throwable $th) {
-      Logger::log($th->getMessage(), $th->getCode());
+      \FFP\Logger::error($th->getMessage());
 
       $flag = false;
     }

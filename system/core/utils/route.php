@@ -1,28 +1,40 @@
 <?php
-  namespace FPW\Core\Utils;
+  namespace FFP\Core\Utils;
 
+  /**
+   * @property-read string $path
+   */
   class Route {
+    private string $_path;
+
     /**
-     * @var \FPW\DTO\Route[]
+     * @var \FFP\DTO\Route[]
      */
     private array $_routes = array();
 
-    private \FPW\DTO\Route\Handle $_routeHandle;
+    private \FFP\DTO\Route\Handle $_routeHandle;
 
     /**
-     * @var array<string,\FPW\DTO\Route\Handle[]>
+     * @var array<string,\FFP\DTO\Route\Handle[]>
      */
     private array $_middleware;
 
-    /**
-     * @param \Closure|array|string $callback
-     */
-    public function __construct(string $path, callable $callback) {
+    public function __get(string $name) {
+      return match ($name) {
+        'path' => $this->_path,
+        default => null,
+      };
+    }
+
+    public function __construct(string $path, \Closure|array|string $callback) {
+      $path = \FFP\Core\Utils\Route::convertPath($path);
       $paths = ($path === '') ? array() : explode('/', $path);
 
-      foreach ($paths as $pi => $p) { array_push($this->_routes, new \FPW\DTO\Route($p)); }
+      $this->_path = $path;
 
-      $this->_routeHandle = new \FPW\DTO\Route\Handle($callback);
+      foreach ($paths as $pi => $p) { array_push($this->_routes, new \FFP\DTO\Route($p)); }
+
+      $this->_routeHandle = new \FFP\DTO\Route\Handle($callback);
     }
 
     public function depth(): int { return count($this->_routes); }
@@ -31,22 +43,22 @@
      * @param string[] $paths
      */
     public function match(array $paths): bool {
-      return array_all(
-        $paths,
-        function ($p) {
-          return array_any(
-            $this->_routes,
-            function ($r) use ($p) { return $r->match($p); }
-          );
-        }
-      );
+      $match = false;
+
+      foreach ($paths as $pi => $p) {
+        $match = $this->_routes[$pi]->match($p);
+
+        if (!$match) { break; }
+      }
+
+      return $match;
     }
 
     /**
      * @param array{
-     *   context: \FPW\App,
-     *   request: \FPW\DTO\Request,
-     *   response: \FPW\DTO\Response
+     *   context: \FFP\App,
+     *   request: \FFP\DTO\Request,
+     *   response: \FFP\DTO\Response
      * } $args
      */
     public function route(array $args): void {
@@ -59,9 +71,9 @@
 
     /**
      * @param array{
-     *   context: \FPW\App,
-     *   request: \FPW\DTO\Request,
-     *   response: \FPW\DTO\Response
+     *   context: \FFP\App,
+     *   request: \FFP\DTO\Request,
+     *   response: \FFP\DTO\Response
      * } $args
      * @return array<string,mixed>
      */

@@ -1,11 +1,11 @@
 <?php
-  namespace FPW\DTO;
+  namespace FFP\DTO;
 
   /**
    * @property-read null|string $path
    * @property-read null|string $name
    * @property-read null|string $regex
-   * @property-read null|\FPW\Enums\Val\Type $type
+   * @property-read null|\FFP\Enums\Val\Type $type
    */
   class Route {
     private ?string $_path;
@@ -14,7 +14,7 @@
 
     private ?string $_regex;
 
-    private ?\FPW\Enums\Val\Type $_type;
+    private ?\FFP\Enums\Val\Type $_type;
 
     public function __get(string $name) {
       return match ($name) {
@@ -34,7 +34,7 @@
       if (preg_match('/^{(<(?P<regex>.+)>)?(?P<name>\w+)(:(?P<type>string|int(eger)?|float|double))?}$/', $path, $matches)) {
         $regex = $matches['regex'] ?? '';
         $name = $matches['name'];
-        $type = \FPW\Enums\Val\Type::tryFrom($matches['type'] ?? '');
+        $type = \FFP\Enums\Val\Type::tryFrom($matches['type'] ?? '');
 
         if ($regex === '') { $regex = null; }
       } else { $this->_path = $path; }

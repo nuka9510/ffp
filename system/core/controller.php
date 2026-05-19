@@ -1,14 +1,17 @@
 <?php
-  namespace FPW\Core;
+  namespace FFP\Core;
 
   /**
-   * @property-read \FPW\App $context
-   * @property-read \FPW\DTO\Request $request
+   * @property-read \FFP\App $context
+   * @property-read \FFP\DTO\Request $request
+   * @property-read \FFP\DTO\Response $response
    */
   class Controller {
-    private \FPW\App $_context;
+    private \FFP\App $_context;
 
-    private \FPW\DTO\Request $_request;
+    private \FFP\DTO\Request $_request;
+
+    private \FFP\DTO\Response $_response;
 
     private array $_params;
 
@@ -31,19 +34,22 @@
       return match ($name) {
         'context' => $this->_context,
         'request' => $this->_request,
+        'response' => $this->_response,
         default => null,
       };
     }
 
     /**
      * @param  array{
-     *   context: \FPW\App,
-     *   request: \FPW\DTO\Request
+     *   context: \FFP\App,
+     *   request: \FFP\DTO\Request,
+     *   response: \FFP\DTO\Response
      * } $args
      */
     public function __construct(array $args) {
       $this->_context = $args['context'];
       $this->_request = $args['request'];
+      $this->_response = $args['response'];
       $this->_params = $args['request']->method->getParams();
       $this->_files = $_FILES;
     }
@@ -52,7 +58,7 @@
 
     protected function xssUnescape(string $arg): string { return htmlspecialchars_decode($arg, ENT_QUOTES | ENT_HTML5); }
 
-    protected function getParam(string $key, ?\FPW\Enums\Val\Type $type = null, mixed $default = null, ?bool $xss = null): mixed {
+    protected function getParam(string $key, ?\FFP\Enums\Val\Type $type = null, mixed $default = null, ?bool $xss = null): mixed {
       $param = $this->_params[$key];
 
       if (is_array($param)) {
@@ -74,20 +80,20 @@
     protected function getFile(string $key): null|array { return $this->_files[$key]; }
 
     /**
-     * @template T of \FPW\Core\Model
+     * @template T of \FFP\Core\Model
      *
      * @param  class-string<T> $model
      * @return T
      */
-    protected function getModel(string $model, string $driver = 'default'): \FPW\Core\Model {
+    protected function getModel(string $model, string $driver = 'default'): \FFP\Core\Model {
       $_driver = $this->_context->getDBDriver($driver);
 
       if (isset($_driver)) {
         return new $model($_driver);
-      } else { throw new \FPW\Errors\Controller('Driver not found.'); }
+      } else { throw new \FFP\Errors\Controller('Driver not found.'); }
     }
 
-    private function ____getParamArr(array &$param, ?\FPW\Enums\Val\Type $type, mixed $default, ?bool $xss): void {
+    private function ____getParamArr(array &$param, ?\FFP\Enums\Val\Type $type, mixed $default, ?bool $xss): void {
       foreach ($param as &$v) {
         if (is_array($v)) {
           $this->____getParamArr($v, $type, $default, $xss);
@@ -95,7 +101,7 @@
       }
     }
 
-    private function ____convertParam(?string &$param, ?\FPW\Enums\Val\Type $type, mixed $default, ?bool $xss): void {
+    private function ____convertParam(?string &$param, ?\FFP\Enums\Val\Type $type, mixed $default, ?bool $xss): void {
       if (
         isset($default) &&
         !isset($param)

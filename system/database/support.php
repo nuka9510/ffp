@@ -1,8 +1,8 @@
 <?php
-  namespace FPW\Database;
+  namespace FFP\Database;
 
   /**
-   * @var array<string, class-string<\FPW\Interfaces\Database\Driver>>
+   * @var array<string, class-string<\FFP\Interfaces\Database\Driver>>
    */
   const SUPPORT = array(
     'mysql' => MySqlDriver::class

@@ -1,9 +1,9 @@
 <?php
-  namespace FPW\Interfaces\Http;
+  namespace FFP\Interfaces\Http;
 
   /**
-   * @property-read ?\FPW\Enums\Http\Status $httpStatus
-   * @property-read \FPW\Enums\Http\Error $type
+   * @property-read ?\FFP\Enums\Http\Status $httpStatus
+   * @property-read \FFP\Enums\Http\Error $type
    */
   interface Error extends \Throwable {
     /**
@@ -13,6 +13,6 @@
      *   previous: null|\Throwable
      * } $args
      */
-    public function __construct(array $args = array(), \FPW\Enums\Http\Error $type = \FPW\Enums\Http\Error::VIEW);
+    public function __construct(array $args = array(), \FFP\Enums\Http\Error $type = \FFP\Enums\Http\Error::VIEW);
   }
 ?>

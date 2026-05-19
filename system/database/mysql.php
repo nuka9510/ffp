@@ -1,14 +1,13 @@
 <?php
-  namespace FPW\Database;
+  namespace FFP\Database;
 
-  class MySqlDriver extends \FPW\Implements\Database\Driver {
+  class MySqlDriver extends \FFP\Implements\Database\Driver {
     /** @var int[] */
     private array $_version;
 
     private bool $_sLock;
 
-    #[\Override]
-    public function __construct(\FPW\DTO\Database\Driver $config) {
+    public function __construct(\FFP\DTO\Database\Driver $config) {
       parent::__construct($config);
 
       try {
@@ -20,22 +19,21 @@
     }
 
     /**
-     * @param null|\FPW\Enums\Database\Mysql\Option $option
-     * @throws \PDOException|\FPW\Errors\Database\Driver
+     * @param null|\FFP\Enums\Database\Mysql\Option $option
+     * @throws \PDOException|\FFP\Errors\Database\Driver
      */
-    #[\Override]
-    public function select(?\FPW\Interfaces\Database\SelectOption $option = null): void {
+    public function select(?\FFP\Interfaces\Database\SelectOption $option = null): void {
       try {
         if ($this->inTransaction()) {
           match ($this->_transactionMode) {
-            \FPW\Enums\Database\Transaction::R => array_push($this->_sql, ($this->_sLock) ? 'FOR SHARE' : 'LOCK IN SHARE MODE'),
-            \FPW\Enums\Database\Transaction::W => array_push($this->_sql, 'FOR UPDATE'),
+            \FFP\Enums\Database\Transaction::R => array_push($this->_sql, ($this->_sLock) ? 'FOR SHARE' : 'LOCK IN SHARE MODE'),
+            \FFP\Enums\Database\Transaction::W => array_push($this->_sql, 'FOR UPDATE'),
           };
 
           if ($this->_sLock) {
             match ($option) {
-              \FPW\Enums\Database\Mysql\Option::NOWAIT,
-              \FPW\Enums\Database\Mysql\Option::SKIP_LOCKED => array_push($this->_sql, $option->value),
+              \FFP\Enums\Database\Mysql\Option::NOWAIT,
+              \FFP\Enums\Database\Mysql\Option::SKIP_LOCKED => array_push($this->_sql, $option->value),
             };
           }
         }

@@ -1,5 +1,5 @@
 <?php
-  namespace FPW;
+  namespace FFP;
 
   class Logger {
     public static function log(string $message, int $level = FRANKENPHP_LOG_LEVEL_INFO, array $context = array()): void { frankenphp_log($message, $level, $context); }

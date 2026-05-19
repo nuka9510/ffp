@@ -1,5 +1,5 @@
 <?php
-  namespace FPW\Errors\Database;
+  namespace FFP\Errors\Database;
 
   class Driver extends \Exception {}
 ?>

@@ -1,7 +1,7 @@
 <?php
-  namespace FPW\Errors\Http;
+  namespace FFP\Errors\Http;
 
-  class InternalServerError extends \FPW\Implements\Http\Error {
-    protected ?\FPW\Enums\Http\Status $_httpStatus = \FPW\Enums\Http\Status::INTERNAL_SERVER_ERROR;
+  class InternalServerError extends \FFP\Implements\Http\Error {
+    protected ?\FFP\Enums\Http\Status $_httpStatus = \FFP\Enums\Http\Status::INTERNAL_SERVER_ERROR;
   }
 ?>

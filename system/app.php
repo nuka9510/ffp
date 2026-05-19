@@ -1,5 +1,5 @@
 <?php
-  namespace FPW;
+  namespace FFP;
 
   $profile = $_SERVER['APP_PROFILE'] ?? '';
 
@@ -9,26 +9,40 @@
   
   if (file_exists($database)) {
     require_once($database);
-  } else { throw new \Exception('Database configuration file not found for profile: '.($profile ?? ''), FRANKENPHP_LOG_LEVEL_ERROR); }
+  } else { throw new \Exception('Database configuration file not found for profile: '.($profile ?? '')); }
+
+  unset($profile);
+  unset($database);
 
   /**
-   * @property-read bool $xss
    * @property-read ?string $profile
+   * @property-read string $charset
+   * @property-read bool $xss
+   * @property-read array<string,mixed> $env
    */
   class App {
     /**
-     * @var array<string,\FPW\Interfaces\Database\Driver>
+     * @var array<string,\FFP\Interfaces\Database\Driver>
      */
     private array $_DBDrivers;
 
+    private ?string $_profile;
+
+    private string $_charset;
+
     private bool $_xss;
 
-    private ?string $_profile;
+    /**
+     * @var array<string,mixed>
+     */
+    private array $_env;
 
     public function __get(string $name) {
       return match ($name) {
-        'xss' => $this->_xss,
         'profile' => $this->_profile,
+        'charset' => $this->_charset,
+        'xss' => $this->_xss,
+        'env' => $this->_env,
         default => null,
       };
     }
@@ -37,59 +51,65 @@
       Logger::info('project boot - '.($_SERVER['APP_SCHEME'] ?? 'http://').($_SERVER['APP_HOST'] ?? 'localhost').':'.($_SERVER['APP_PORT'] ?? 8081));
 
       try {
-        $this->_DBDrivers = \FPW\Database\Driver::getDrivers();
-        $this->_xss = ($_SERVER['APP_XSS'] ?? 'off') === 'on';
+        $this->_DBDrivers = \FFP\Database\Driver::getDrivers();
         $this->_profile = $_SERVER['APP_PROFILE'] ?? null;
+        $this->_charset = $_SERVER['APP_CHARSET'] ?? 'UTF-8';
+        $this->_xss = ($_SERVER['APP_XSS'] ?? 'off') === 'on';
+        $this->_env = $GLOBALS['env'] ?? array();
 
-        \FPW\Core\Route::init();
+        \FFP\Core\Route::init();
       } catch (\Throwable $th) { throw $th; }
     }
 
     public function requestHandle() {
-      $res = new \FPW\DTO\Response();
+      $res = new \FFP\DTO\Response($this);
 
       try {
-        $req = new \FPW\DTO\Request();
+        $req = new \FFP\DTO\Request($this);
 
-        \FPW\Core\Route::route(array(
+        $this->____DBDriverRefresh();
+
+        \FFP\Core\Route::route(array(
           'context' => $this,
           'request' => $req,
           'response' => $res
         ));
       } catch (\Throwable $th) {
         $error = match ($th::class) {
-          \FPW\Errors\Http\Unauthorized::class => $th,
-          \FPW\Errors\Http\Forbidden::class => $th,
-          \FPW\Errors\Http\NotFound::class => $th,
-          \FPW\Errors\Http\MethodNotAllowed::class => $th,
-          default => new \FPW\Errors\Http\InternalServerError(
+          \FFP\Errors\Http\Unauthorized::class => $th,
+          \FFP\Errors\Http\Forbidden::class => $th,
+          \FFP\Errors\Http\NotFound::class => $th,
+          \FFP\Errors\Http\MethodNotAllowed::class => $th,
+          default => new \FFP\Errors\Http\InternalServerError(
             array(
               'message' => $th->getMessage(),
               'code' => $th->getCode(),
               'previous' => $th->getPrevious()
             ),
-            \FPW\Enums\Http\Error::VIEW
+            \FFP\Enums\Http\Error::VIEW
           ),
         };
 
-        \FPW\Logger::error($error->getMessage());
+        \FFP\Logger::error($error->getMessage());
 
-        $res->setError($error);
-
-        $res->error();
-      }
+        $res->error($error);
+      } finally { $this->____DBDriverReset(); }
     }
 
     public function shutdown() {
       Logger::info('project shutdown');
     }
 
-    public function getDBDriver(string $key = 'default'): ?\FPW\Interfaces\Database\Driver { return $this->_DBDrivers[$key]; }
+    public function getDBDriver(string $key = 'default'): ?\FFP\Interfaces\Database\Driver { return $this->_DBDrivers[$key]; }
 
-    public function DBDriverRefresh(): void {
+    private function ____DBDriverRefresh(): void {
       foreach ($this->_DBDrivers as $dk => $d) {
         if (!$d->isConnected()) { $d->connect(); }
       }
+    }
+
+    private function ____DBDriverReset(): void {
+      foreach ($this->_DBDrivers as $dk => $d) { $d->reset(); }
     }
   }
 ?>

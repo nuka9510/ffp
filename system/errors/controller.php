@@ -1,5 +1,5 @@
 <?php
-  namespace FPW\Errors;
+  namespace FFP\Errors;
 
   class Controller extends \Exception {}
 ?>

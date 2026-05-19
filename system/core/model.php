@@ -1,17 +1,17 @@
 <?php
-  namespace FPW\Core;
+  namespace FFP\Core;
 
   class Model {
-    private \FPW\Interfaces\Database\Driver $_dirver;
+    private \FFP\Interfaces\Database\Driver $_dirver;
 
-    public function __construct(\FPW\Interfaces\Database\Driver $driver) {
+    public function __construct(\FFP\Interfaces\Database\Driver $driver) {
       $this->_dirver = $driver;
 
       if (!$driver->isConnected()) {
         try {
           $driver->connect();
         } catch (\PDOException $th) {
-          \FPW\Logger::error($th->getMessage());
+          \FFP\Logger::error($th->getMessage());
 
           throw $th;
         } catch (\Throwable $th) { throw $th; }

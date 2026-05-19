@@ -1,8 +1,8 @@
 <?php
-  namespace FPW\DTO\Route;
+  namespace FFP\DTO\Route;
 
   class Handle {
-    private \FPW\Enums\Route\Handle $_handle;
+    private \FFP\Enums\Route\Handle $_handle;
 
     private \ReflectionMethod|\ReflectionFunction $_reflection;
 
@@ -10,10 +10,7 @@
 
     private bool $_isController;
 
-    /**
-     * @var \Closure|array|string $calldable
-     */
-    public function __construct(callable $calldable) {
+    public function __construct(\Closure|array|string $calldable) {
       $this->_calldable = $calldable;
       $this->____init($calldable);
     }
@@ -25,7 +22,7 @@
       $methodObj = null;
       $invokeArgs = array();
 
-      if ($this->_handle === \FPW\Enums\Route\Handle::INSTANCE_METHOD) {
+      if ($this->_handle === \FFP\Enums\Route\Handle::INSTANCE_METHOD) {
         if (is_string($this->_calldable[0])) {
           $classArgs = array();
           $class = new \ReflectionClass($this->_calldable[0]);
@@ -63,53 +60,50 @@
       }
 
       return match ($this->_handle) {
-        \FPW\Enums\Route\Handle::FUNCTION => $this->_reflection->invokeArgs($invokeArgs),
-        \FPW\Enums\Route\Handle::INSTANCE_METHOD => $this->_reflection->invokeArgs($methodObj, $invokeArgs),
-        \FPW\Enums\Route\Handle::STATIC_METHOD => $this->_reflection->invokeArgs($methodObj, $invokeArgs),
+        \FFP\Enums\Route\Handle::FUNCTION => $this->_reflection->invokeArgs($invokeArgs),
+        \FFP\Enums\Route\Handle::INSTANCE_METHOD => $this->_reflection->invokeArgs($methodObj, $invokeArgs),
+        \FFP\Enums\Route\Handle::STATIC_METHOD => $this->_reflection->invokeArgs($methodObj, $invokeArgs),
         default => false,
       };
     }
 
-    /**
-     * @var \Closure|array|string $calldable
-     */
-    private function ____init(callable $calldable) {
+    private function ____init(\Closure|array|string $calldable) {
       $handle = null;
       $reflection = null;
       $isController = false;
 
       if (is_callable($calldable)) {
         if (is_array($calldable)) {
-          $handle = \FPW\Enums\Route\Handle::METHOD;
+          $handle = \FFP\Enums\Route\Handle::METHOD;
         } else if (is_string($calldable)) {
           if (strpos($calldable, '::') !== false) {
-            $handle = \FPW\Enums\Route\Handle::STATIC_METHOD;
-          } else { $handle = \FPW\Enums\Route\Handle::FUNCTION; }
-        } else { $handle = \FPW\Enums\Route\Handle::FUNCTION; }
+            $handle = \FFP\Enums\Route\Handle::STATIC_METHOD;
+          } else { $handle = \FFP\Enums\Route\Handle::FUNCTION; }
+        } else { $handle = \FFP\Enums\Route\Handle::FUNCTION; }
 
         $reflection = match ($handle) {
-          \FPW\Enums\Route\Handle::METHOD => new \ReflectionMethod($calldable[0], $calldable[1]),
-          \FPW\Enums\Route\Handle::STATIC_METHOD => is_callable('ReflectionMethod::createFromMethodName')
+          \FFP\Enums\Route\Handle::METHOD => new \ReflectionMethod($calldable[0], $calldable[1]),
+          \FFP\Enums\Route\Handle::STATIC_METHOD => is_callable('ReflectionMethod::createFromMethodName')
                                                       ? \ReflectionMethod::createFromMethodName($calldable)
                                                       : new \ReflectionMethod($calldable),
-          \FPW\Enums\Route\Handle::FUNCTION => new \ReflectionFunction($calldable),
+          \FFP\Enums\Route\Handle::FUNCTION => new \ReflectionFunction($calldable),
         };
 
         $handle = match ($handle) {
-          \FPW\Enums\Route\Handle::METHOD => $reflection->isStatic()
-                                                ? \FPW\Enums\Route\Handle::STATIC_METHOD
-                                                : \FPW\Enums\Route\Handle::INSTANCE_METHOD,
+          \FFP\Enums\Route\Handle::METHOD => $reflection->isStatic()
+                                                ? \FFP\Enums\Route\Handle::STATIC_METHOD
+                                                : \FFP\Enums\Route\Handle::INSTANCE_METHOD,
           default => $handle,
         };
       } else if (is_callable($calldable, true)) {
-        $handle = \FPW\Enums\Route\Handle::INSTANCE_METHOD;
+        $handle = \FFP\Enums\Route\Handle::INSTANCE_METHOD;
 
         if (is_string($calldable)) { $calldable = explode('::', $calldable); }
 
         $reflection = new \ReflectionMethod($calldable[0], $calldable[1]);
         $class = new \ReflectionClass($calldable[0]);
-        $isController = $class->getName() === \FPW\Core\Controller::class ||
-                        is_subclass_of($class->getName(), \FPW\Core\Controller::class);
+        $isController = $class->getName() === \FFP\Core\Controller::class ||
+                        is_subclass_of($class->getName(), \FFP\Core\Controller::class);
       }
 
       $this->_handle = $handle;

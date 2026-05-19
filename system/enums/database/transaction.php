@@ -1,5 +1,5 @@
 <?php
-  namespace FPW\Enums\Database;
+  namespace FFP\Enums\Database;
 
   enum Transaction {
     case R;

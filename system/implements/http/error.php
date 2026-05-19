@@ -1,10 +1,10 @@
 <?php
-  namespace FPW\Implements\Http;
+  namespace FFP\Implements\Http;
 
-  abstract class Error extends \Exception implements \FPW\Interfaces\Http\Error {
-    protected ?\FPW\Enums\Http\Status $_httpStatus = null;
+  abstract class Error extends \Exception implements \FFP\Interfaces\Http\Error {
+    protected ?\FFP\Enums\Http\Status $_httpStatus = null;
 
-    protected \FPW\Enums\Http\Error $_type;
+    protected \FFP\Enums\Http\Error $_type;
 
     public function __get(string $name) {
       return match ($name) {
@@ -21,8 +21,7 @@
      *   previous: null|\Throwable
      * } $args
      */
-    #[\Override]
-    public function __construct(array $args = array(), \FPW\Enums\Http\Error $type = \FPW\Enums\Http\Error::VIEW) {
+    public function __construct(array $args = array(), \FFP\Enums\Http\Error $type = \FFP\Enums\Http\Error::VIEW) {
       parent::__construct($args['message'] ?? '', $args['code'] ?? 0, $args['previous'] ?? null);
 
       $this->_type = $type;

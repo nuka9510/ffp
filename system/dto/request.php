@@ -1,8 +1,8 @@
 <?php
-  namespace FPW\DTO;
+  namespace FFP\DTO;
 
   /**
-   * @property-read \FPW\Enums\Route\Method $method
+   * @property-read \FFP\Enums\Route\Method $method
    * @property-read string $scheme
    * @property-read string $host
    * @property-read string $path
@@ -12,7 +12,9 @@
    * @property-read string $clientIp
    */
   class Request {
-    private \FPW\Enums\Route\Method $_method;
+    private \FFP\App $_app;
+
+    private \FFP\Enums\Route\Method $_method;
 
     private string $_scheme;
 
@@ -45,17 +47,18 @@
       };
     }
 
-    public function __construct() {
+    public function __construct(\FFP\App $app) {
       try {
-        $method = \FPW\Enums\Route\Method::from($_SERVER['REQUEST_METHOD']);
+        $method = \FFP\Enums\Route\Method::from($_SERVER['REQUEST_METHOD']);
         $scheme = $this->____getScheme();
         $host = $_SERVER['HTTP_HOST'];
-        $path = \FPW\Core\Utils\Route::convertPath(parse_url(urldecode($_SERVER['REQUEST_URI']), PHP_URL_PATH));
+        $path = \FFP\Core\Utils\Route::convertPath(parse_url(urldecode($_SERVER['REQUEST_URI']), PHP_URL_PATH));
         $query = $_SERVER['QUERY_STRING'];
         $paths = ($path === '') ? array() : explode('/', $path);
         $referer = $this->____getReferer();
         $clientIp = $this->____getClientIp();
 
+        $this->_app = $app;
         $this->_method = $method;
         $this->_scheme = $scheme;
         $this->_host = $host;
@@ -65,10 +68,10 @@
         $this->_referer = $referer;
         $this->_clientIp = $clientIp;
       } catch (\ValueError $th) {
-        throw new \FPW\Errors\Http\MethodNotAllowed(array('message' => "Unsupported HTTP method. - {$_SERVER['REQUEST_METHOD']}"), \FPW\Enums\Http\Error::VIEW);
+        throw new \FFP\Errors\Http\MethodNotAllowed(array('message' => "Unsupported HTTP method. - {$_SERVER['REQUEST_METHOD']}"), \FFP\Enums\Http\Error::VIEW);
       } catch (\Throwable $th) { throw $th; }
 
-      \FPW\Logger::info("requestHandle - {$_SERVER['REQUEST_METHOD']} {$scheme}://{$host}{$_SERVER['REQUEST_URI']}");
+      \FFP\Logger::info("requestHandle - {$_SERVER['REQUEST_METHOD']} {$scheme}://{$host}{$_SERVER['REQUEST_URI']}");
     }
 
     private function ____getScheme(): string { return $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? $_SERVER['REQUEST_SCHEME']; }
@@ -79,11 +82,13 @@
       if (isset($referer)) {
         $host = parse_url($referer, PHP_URL_HOST);
         $port = parse_url($referer, PHP_URL_PORT);
-        $path = parse_url($referer, PHP_URL_PATH);
+        $path = \FFP\Core\Utils\Route::convertPath(parse_url($referer, PHP_URL_PATH));
 
         if (isset($port)) {
           $port = ":{$port}";
         } else { $port = ''; }
+
+        if ($path !== '') { $path = "/{$path}"; }
 
         $referer = "{$host}{$port}{$path}";
       }

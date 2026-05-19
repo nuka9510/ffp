@@ -1,5 +1,5 @@
 <?php
-  namespace FPW\Enums\Route;
+  namespace FFP\Enums\Route;
 
   enum Handle {
     case METHOD;

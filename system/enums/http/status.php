@@ -1,5 +1,5 @@
 <?php
-  namespace FPW\Enums\Http;
+  namespace FFP\Enums\Http;
 
   enum Status: int {
     case OK = 200;

@@ -1,5 +1,5 @@
 <?php
-  namespace FPW\DTO\Database;
+  namespace FFP\DTO\Database;
 
   /**
    * @property-read string $dsn
@@ -37,14 +37,14 @@
       $this->_options = $config['options'] ?? null;
     }
 
-    public function getDriver(): \FPW\Interfaces\Database\Driver {
+    public function getDriver(): \FFP\Interfaces\Database\Driver {
       $driver = explode(':', $this->_dsn)[0];
 
-      if (array_key_exists($driver, \FPW\Database\SUPPORT)) {
+      if (array_key_exists($driver, \FFP\Database\SUPPORT)) {
         try {
-          return new (\FPW\Database\SUPPORT[$driver])($this);
+          return new (\FFP\Database\SUPPORT[$driver])($this);
         } catch (\Throwable $th) { throw $th; }
-      } else { throw new \Exception("Unsupported database driver: {$driver}", FRANKENPHP_LOG_LEVEL_ERROR); }
+      } else { throw new \Exception("Unsupported database driver: {$driver}"); }
     }
   }
 ?>

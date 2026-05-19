@@ -1,7 +1,7 @@
 <?php
-  namespace FPW\Errors\Http;
+  namespace FFP\Errors\Http;
 
-  class NotFound extends \FPW\Implements\Http\Error {
-    protected ?\FPW\Enums\Http\Status $_httpStatus = \FPW\Enums\Http\Status::NOT_FOUND;
+  class NotFound extends \FFP\Implements\Http\Error {
+    protected ?\FFP\Enums\Http\Status $_httpStatus = \FFP\Enums\Http\Status::NOT_FOUND;
   }
 ?>

@@ -1,5 +1,5 @@
 <?php
-  namespace FPW\Interfaces\Database;
+  namespace FFP\Interfaces\Database;
 
   interface SelectOption {}
 ?>

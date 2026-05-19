@@ -1,5 +1,5 @@
 <?php
-  namespace FPW\Enums\Val;
+  namespace FFP\Enums\Val;
 
   enum Type: string {
     case STRING = 'string';

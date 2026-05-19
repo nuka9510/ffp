@@ -1,7 +1,7 @@
 <?php
-  namespace FPW\Errors\Http;
+  namespace FFP\Errors\Http;
 
-  class Forbidden extends \FPW\Implements\Http\Error {
-    protected ?\FPW\Enums\Http\Status $_httpStatus = \FPW\Enums\Http\Status::FORBIDDEN;
+  class Forbidden extends \FFP\Implements\Http\Error {
+    protected ?\FFP\Enums\Http\Status $_httpStatus = \FFP\Enums\Http\Status::FORBIDDEN;
   }
 ?>

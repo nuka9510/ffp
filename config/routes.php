@@ -1,25 +1,23 @@
 <?php
-  use FPW\Core\Route as Route;
-  use FPW\Enums\Route\Method;
-  use FPW\Logger;
+  use FFP\Core\Route as Route;
+  use FFP\Enums\Route\Method;
+  use FFP\Logger;
 
-  Route::append(Method::GET, '/', function ($context) {
-    Logger::debug(print_r($context, true));
-
-    phpinfo();
-  });
-
-  Route::append(Method::GET, '/test', function ($context) {
-    Logger::debug(print_r($context, true));
-
-    phpinfo();
-  });
-
-  Route::append(Method::GET, '/test/{id:int}', function ($id, $context, $request) {
+  Route::append(Method::GET, '/', function (\FFP\App $context, \FFP\DTO\Request $request, \FFP\DTO\Response $response) {
     Logger::debug(print_r($context, true));
     Logger::debug(print_r($request, true));
-    Logger::debug("id: {$id}");
+    Logger::debug(print_r($response, true));
 
     phpinfo();
   });
+
+  Route::append(Method::GET, '/test', function (\FFP\App $context, \FFP\DTO\Request $request, \FFP\DTO\Response $response) {
+    Logger::debug(print_r($context, true));
+    Logger::debug(print_r($request, true));
+    Logger::debug(print_r($response, true));
+
+    phpinfo();
+  });
+
+  Route::append(Method::GET, '/test/{id:int}', [\Controllers\Index::class, 'getTest']);
 ?>
