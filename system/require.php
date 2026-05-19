@@ -1,15 +1,6 @@
 <?php
   require_once(__DIR__.'/../vendor/autoload.php');
 
-  $__errors = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/errors'));
-
-  foreach ($__errors as $ei => $e) {
-    if (
-      $e->isFile() &&
-      $e->getExtension() === 'php'
-    ) { require_once($e->getPathname()); }
-  }
-
   $__interfaces = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/interfaces'));
 
   foreach ($__interfaces as $ii => $i) {
@@ -26,6 +17,15 @@
       $i->isFile() &&
       $i->getExtension() === 'php'
     ) { require_once($i->getPathname()); }
+  }
+
+  $__errors = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/errors'));
+
+  foreach ($__errors as $ei => $e) {
+    if (
+      $e->isFile() &&
+      $e->getExtension() === 'php'
+    ) { require_once($e->getPathname()); }
   }
 
   $__enums = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/enums'));
