@@ -1,7 +1,7 @@
 <?php
   namespace FPW\Enums\Route;
 
-  enum Callback {
+  enum Handle {
     case METHOD;
     case INSTANCE_METHOD;
     case STATIC_METHOD;
@@ -9,10 +9,10 @@
 
     public function getClass(): string {
       return match ($this) {
-        Callback::METHOD,
-        Callback::INSTANCE_METHOD,
-        Callback::STATIC_METHOD => \ReflectionMethod::class,
-        Callback::FUNCTION => \ReflectionFunction::class,
+        Handle::METHOD,
+        Handle::INSTANCE_METHOD,
+        Handle::STATIC_METHOD => \ReflectionMethod::class,
+        Handle::FUNCTION => \ReflectionFunction::class,
       };
     }
   }

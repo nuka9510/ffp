@@ -46,10 +46,38 @@
     }
 
     public function requestHandle() {
-      $req = new \FPW\DTO\Request();
       $res = new \FPW\DTO\Response();
 
-      \FPW\Core\Route::route($this, $req);
+      try {
+        $req = new \FPW\DTO\Request();
+
+        \FPW\Core\Route::route(array(
+          'context' => $this,
+          'request' => $req,
+          'response' => $res
+        ));
+      } catch (\Throwable $th) {
+        $error = match ($th::class) {
+          \FPW\Errors\Http\Unauthorized::class => $th,
+          \FPW\Errors\Http\Forbidden::class => $th,
+          \FPW\Errors\Http\NotFound::class => $th,
+          \FPW\Errors\Http\MethodNotAllowed::class => $th,
+          default => new \FPW\Errors\Http\InternalServerError(
+            array(
+              'message' => $th->getMessage(),
+              'code' => $th->getCode(),
+              'previous' => $th->getPrevious()
+            ),
+            \FPW\Enums\Http\Error::VIEW
+          ),
+        };
+
+        \FPW\Logger::error($error->getMessage());
+
+        $res->setError($error);
+
+        $res->error();
+      }
     }
 
     public function shutdown() {
@@ -57,5 +85,11 @@
     }
 
     public function getDBDriver(string $key = 'default'): ?\FPW\Interfaces\Database\Driver { return $this->_DBDrivers[$key]; }
+
+    public function DBDriverRefresh(): void {
+      foreach ($this->_DBDrivers as $dk => $d) {
+        if (!$d->isConnected()) { $d->connect(); }
+      }
+    }
   }
 ?>

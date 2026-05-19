@@ -65,13 +65,7 @@
         $this->_referer = $referer;
         $this->_clientIp = $clientIp;
       } catch (\ValueError $th) {
-        \FPW\Logger::error("Unsupported HTTP method. - {$_SERVER['REQUEST_METHOD']}");
-
-        http_response_code(405);
-
-        header('Allow: '.implode(', ', array_map(function ($m) { return $m->value; }, \FPW\Enums\Route\Method::cases())));
-
-        throw $th;
+        throw new \FPW\Errors\Http\MethodNotAllowed(array('message' => "Unsupported HTTP method. - {$_SERVER['REQUEST_METHOD']}"), \FPW\Enums\Http\Error::VIEW);
       } catch (\Throwable $th) { throw $th; }
 
       \FPW\Logger::info("requestHandle - {$_SERVER['REQUEST_METHOD']} {$scheme}://{$host}{$_SERVER['REQUEST_URI']}");

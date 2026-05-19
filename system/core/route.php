@@ -21,32 +21,33 @@
       }
     }
 
-    public static function route(\FPW\App $app, \FPW\DTO\Request $req): void {
-      try {
-        $routes = array_filter(
-          static::$_routes[$req->method->value],
-          function ($r) use ($req) { return $r['depth'] === count($req->paths); }
-        );
-        $route = null;
+    /**
+     * @param array{
+     *   context: \FPW\App,
+     *   request: \FPW\DTO\Request,
+     *   response: \FPW\DTO\Response
+     * } $args
+     */
+    public static function route(array $args): void {
+      $routes = array_filter(
+        static::$_routes[$args['request']->method->value],
+        function ($r) use ($args) { return $r['depth'] === count($args['request']->paths); }
+      );
+      $route = null;
 
-        foreach ($routes as $ri => $r) {
-          if (!$r['route']->match($req->paths)) { continue; }
+      foreach ($routes as $ri => $r) {
+        if (!$r['route']->match($args['request']->paths)) { continue; }
 
-          $route = $r['route'];
+        $route = $r['route'];
 
-          break;
-        }
+        break;
+      }
 
-        if (isset($route)) {
+      if (!isset($route)) { throw new \FPW\Errors\Http\NotFound(array('message' => "Route not found. path: /{$args['request']->path}"), \FPW\Enums\Http\Error::VIEW); }
 
-          $route->route($app, $req);
+      $args['context']->DBDriverRefresh();
 
-        } else { throw new \FPW\Errors\Route("Route not found. path: /{$req->path}"); }
-      } catch (\FPW\Errors\Route $th) {
-        http_response_code(404);
-
-        throw $th;
-      } catch (\Throwable $th) { \FPW\Logger::error($th->getMessage()); }
+      $route->route($args);
     }
 
     public static function append(\FPW\Enums\Route\Method $method, string $path, callable $callback): \FPW\Core\Utils\Route {
