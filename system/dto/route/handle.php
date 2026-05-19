@@ -108,15 +108,8 @@
 
         $reflection = new \ReflectionMethod($calldable[0], $calldable[1]);
         $class = new \ReflectionClass($calldable[0]);
-        $isController = $class->getName() === \FPW\Core\Controller::class;
-
-        if (!$isController) {
-          while ($class = $class->getParentClass()) {
-            $isController = $class->getName() === \FPW\Core\Controller::class;
-
-            if ($isController) { break; }
-          }
-        }
+        $isController = $class->getName() === \FPW\Core\Controller::class ||
+                        is_subclass_of($class->getName(), \FPW\Core\Controller::class);
       }
 
       $this->_handle = $handle;
