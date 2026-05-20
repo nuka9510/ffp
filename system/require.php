@@ -11,6 +11,7 @@
   $__models = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../models'));
   $__controllers = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../controllers'));
   $__config = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../config'));
+  $__utils = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../utils'));
 
   foreach ($__interfaces as $ii => $i) {
     if (
@@ -82,6 +83,13 @@
     ) { require_once($c->getPathname()); }
   }
 
+  foreach ($__utils as $ui => $u) {
+    if (
+      $u->isFile() &&
+      $u->getExtension() === 'php'
+    ) { require_once($u->getPathname()); }
+  }
+
   unset($__interfaces);
   unset($__implements);
   unset($__errors);
@@ -92,4 +100,5 @@
   unset($__models);
   unset($__controllers);
   unset($__config);
+  unset($__utils);
 ?>

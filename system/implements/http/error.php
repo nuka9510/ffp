@@ -1,14 +1,18 @@
 <?php
   namespace FFP\Implements\Http;
 
+  /**
+   * @property-read ?\FFP\Enums\Http\Status $status
+   * @property-read \FFP\Enums\Http\Error $type
+   */
   abstract class Error extends \Exception implements \FFP\Interfaces\Http\Error {
-    protected ?\FFP\Enums\Http\Status $_httpStatus = null;
+    protected ?\FFP\Enums\Http\Status $_status = null;
 
     protected \FFP\Enums\Http\Error $_type;
 
     public function __get(string $name) {
       return match ($name) {
-        'httpStatus' => $this->_httpStatus,
+        'status' => $this->_status,
         'type' => $this->_type,
         default => null,
       };

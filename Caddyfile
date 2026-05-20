@@ -43,9 +43,15 @@
 
   servers {$APP_SCHEME}{$APP_HOST}:{$APP_PORT:8081} {
     protocols h1 h2
-    
+
     trusted_proxies static private_ranges
     trusted_proxies_strict
+  }
+
+  frankenphp {
+    php_ini {
+      date.timezone {$APP_TIMEZONE:UTC}
+    }
   }
 }
 
@@ -55,7 +61,7 @@
   encode zstd gzip
 
   @forbidden {
-    path /.vscode/* /.git/* /logs/* /Caddyfile* /.env* /composer.* /Dockerfile* /run-server.sh /.gitignore *.php
+    path /.vscode/* /.git/* /.well-known/* /logs/* /Caddyfile* /.env* /composer.* /Dockerfile* /run-server.sh /.gitignore *.php
   }
 
   @statics {
@@ -65,7 +71,7 @@
   @views {
     path /views/*
   }
-  
+
   handle @forbidden {
     respond @forbidden "Access Denied" 403
   }
@@ -84,11 +90,11 @@
     rewrite /system/index.php?{query}
 
     php_server {
-      env date.timezone {$APP_TIMEZONE:UTC}
-      
       worker {
         file ./system/index.php
+
         num {$APP_WORKER_NUM:1}
+
         {$APP_WATCH}
       }
     }

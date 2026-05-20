@@ -26,10 +26,6 @@
      */
     private array $_files;
 
-    private bool $isErr = false;
-
-    private string $errMsg = '';
-
     public function __get(string $name) {
       return match ($name) {
         'context' => $this->_context,

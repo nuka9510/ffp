@@ -77,7 +77,7 @@
     private function ____getScheme(): string { return $_SERVER['HTTP_X_FORWARDED_PROTO'] ?? $_SERVER['REQUEST_SCHEME']; }
 
     private function ____getReferer(): ?string {
-      $referer = $_SERVER['HTTP_REFERER'];
+      $referer = $_SERVER['HTTP_REFERER'] ?? null;
 
       if (isset($referer)) {
         $host = parse_url($referer, PHP_URL_HOST);

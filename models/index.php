@@ -1,7 +1,5 @@
 <?php
   namespace Models;
 
-  class Index {
-    public function __construct() {}
-  }
+  class Index extends \FFP\Core\Model {}
 ?>

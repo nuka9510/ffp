@@ -43,7 +43,7 @@
      * @param string[] $paths
      */
     public function match(array $paths): bool {
-      $match = false;
+      $match = true;
 
       foreach ($paths as $pi => $p) {
         $match = $this->_routes[$pi]->match($p);

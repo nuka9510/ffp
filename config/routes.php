@@ -8,16 +8,8 @@
     Logger::debug(print_r($request, true));
     Logger::debug(print_r($response, true));
 
-    phpinfo();
+    $response->view('index');
   });
 
-  Route::append(Method::GET, '/test', function (\FFP\App $context, \FFP\DTO\Request $request, \FFP\DTO\Response $response) {
-    Logger::debug(print_r($context, true));
-    Logger::debug(print_r($request, true));
-    Logger::debug(print_r($response, true));
-
-    phpinfo();
-  });
-
-  Route::append(Method::GET, '/test/{id:int}', [\Controllers\Index::class, 'getTest']);
+  Route::append(Method::GET, '/test/{page:int}', [\Controllers\Index::class, 'getTest']);
 ?>

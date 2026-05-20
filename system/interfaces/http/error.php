@@ -2,7 +2,7 @@
   namespace FFP\Interfaces\Http;
 
   /**
-   * @property-read ?\FFP\Enums\Http\Status $httpStatus
+   * @property-read ?\FFP\Enums\Http\Status $status
    * @property-read \FFP\Enums\Http\Error $type
    */
   interface Error extends \Throwable {

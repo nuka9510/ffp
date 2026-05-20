@@ -57,7 +57,7 @@
       extract($res, EXTR_SKIP);
 
       try {
-        include_once($path);
+        include($path);
       } catch (\Throwable $th) { \FFP\Logger::error($th->getMessage()); }
 
       $view = ob_get_contents();
@@ -142,7 +142,7 @@
     }
 
     private function ____errorView(\FFP\Interfaces\Http\Error $error) {
-      $path = "{$_SERVER['DOCUMENT_ROOT']}/views/error/{$error->getCode()}.php";
+      $path = "{$_SERVER['DOCUMENT_ROOT']}/views/errors/{$error->status->value}.php";
 
       if (!file_exists($path)) { return $this->____errorText($error); }
 
@@ -153,7 +153,7 @@
       extract($res, EXTR_SKIP);
 
       try {
-        include_once($path);
+        include($path);
       } catch (\Throwable $th) { \FFP\Logger::error($th->getMessage()); }
 
       $view = ob_get_contents();
