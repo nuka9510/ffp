@@ -61,11 +61,11 @@
   encode zstd gzip
 
   @forbidden {
-    path /.vscode/* /.git/* /.well-known/* /logs/* /Caddyfile* /.env* /composer.* /Dockerfile* /run-server.sh /.gitignore *.php
+    path /.vscode/* /.git/* /logs/* /Caddyfile* /.env* /composer.* /Dockerfile* /run-server.sh /.gitignore *.php
   }
 
   @statics {
-    path /assets/* /favicon.ico
+    path /assets/* /favicon.ico /.well-known/*
   }
 
   @views {
