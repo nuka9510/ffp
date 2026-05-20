@@ -50,6 +50,8 @@
 
   frankenphp {
     php_ini {
+      expose_php Off
+
       date.timezone {$APP_TIMEZONE:UTC}
     }
   }
@@ -59,6 +61,8 @@
   root * .
 
   encode zstd gzip
+
+  header -Server
 
   @forbidden {
     path /.vscode/* /.git/* /logs/* /Caddyfile* /.env* /composer.* /Dockerfile* /run-server.sh /.gitignore *.php
