@@ -2,12 +2,15 @@
   namespace FFP\DTO\Database;
 
   /**
+   * @property-read string $key
    * @property-read string $dsn
    * @property-read null|string $username
    * @property-read null|string $password
    * @property-read null|array<int,mixed> $options
    */
   class Driver {
+    private string $_key;
+
     private string $_dsn;
 
     private ?string $_username;
@@ -19,6 +22,7 @@
 
     public function __get(string $name) {
       return match ($name) {
+        'key' => $this->_key,
         'dsn' => $this->_dsn,
         'username' => $this->_username,
         'password' => $this->_password,
@@ -30,7 +34,8 @@
     /**
      * @param  array<'dsn'|'username'|'password'|'options',null|string|array<int,mixed>> $config
      */
-    public function __construct(array $config) {
+    public function __construct(string $key, array $config) {
+      $this->_key = $key;
       $this->_dsn = $config['dsn'];
       $this->_username = $config['username'] ?? null;
       $this->_password = $config['password'] ?? null;

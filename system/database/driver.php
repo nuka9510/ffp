@@ -10,7 +10,7 @@
     /**
      * @param array<'dsn'|'username'|'password'|'options',string|array<int,mixed>> $config
      */
-    public static function set(string $key, array $config) { static::$drivers[$key] = new \FFP\DTO\Database\Driver($config); }
+    public static function set(string $key, array $config) { static::$drivers[$key] = new \FFP\DTO\Database\Driver($key, $config); }
 
     /**
      * @return array<string,\FFP\Interfaces\Database\Driver>

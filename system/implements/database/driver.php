@@ -44,7 +44,7 @@
       try {
         $this->_pdo = new \PDO($this->_driver->dsn, $this->_driver->username, $this->_driver->password, $this->_driver->options);
 
-        \FFP\Logger::info("Database connected. - {$this->_driver->dsn}");
+        \FFP\Logger::info("Database connected. - {$this->_driver->key}: {$this->_driver->dsn}");
       } catch (\Throwable $th) { throw $th; }
     }
 
