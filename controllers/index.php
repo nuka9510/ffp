@@ -6,8 +6,8 @@
       parent::__construct($args);
     }
 
-    public function getTest(int $id): void {
-      \FFP\Logger::debug("id: {$id}");
+    public function getTest(int $page = 1): void {
+      \FFP\Logger::debug("page: {$page}");
 
       $this->response->view('index');
     }

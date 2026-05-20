@@ -10,5 +10,7 @@
     $response->view('index');
   });
 
+  Route::append(Method::GET, '/test', [\Controllers\Index::class, 'getTest']);
+
   Route::append(Method::GET, '/test/{page:int}', [\Controllers\Index::class, 'getTest']);
 ?>
