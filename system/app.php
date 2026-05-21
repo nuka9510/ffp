@@ -21,6 +21,8 @@
    * @property-read array<string,mixed> $env
    */
   class App {
+    private ?int $_isWorker;
+
     /**
      * @var array<string,\FFP\Interfaces\Database\Driver>
      */
@@ -47,6 +49,8 @@
       };
     }
 
+    public function __construct() { $this->_isWorker = $_SERVER['FRANKENPHP_WORKER']; }
+
     public function boot() {
       Logger::info('project boot - '.($_SERVER['APP_SCHEME'] ?? 'http://').($_SERVER['APP_HOST'] ?? 'localhost').':'.($_SERVER['APP_PORT'] ?? 8081));
 
@@ -62,12 +66,13 @@
     }
 
     public function requestHandle() {
+      $this->____sessionStart();
+      $this->____DBDriverRefresh();
+
       $res = new \FFP\DTO\Response($this);
 
       try {
         $req = new \FFP\DTO\Request($this);
-
-        $this->____DBDriverRefresh();
 
         \FFP\Core\Route::route(array(
           'context' => $this,
@@ -93,7 +98,11 @@
         \FFP\Logger::error($error->getMessage());
 
         $res->error($error);
-      } finally { $this->____DBDriverReset(); }
+      } finally {
+        $this->____DBDriverReset();
+
+        session_write_close();
+      }
     }
 
     public function shutdown() {
@@ -101,6 +110,16 @@
     }
 
     public function getDBDriver(string $key = 'default'): ?\FFP\Interfaces\Database\Driver { return $this->_DBDrivers[$key]; }
+
+    private function ____sessionStart() {
+      if (session_status() === PHP_SESSION_NONE) {
+        $options = $this->_env['session'];
+
+        if ($this->_isWorker) { $options['gc_probability'] = 0; }
+
+        session_start($options);
+      }
+    }
 
     private function ____DBDriverRefresh(): void {
       foreach ($this->_DBDrivers as $dk => $d) {

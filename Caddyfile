@@ -65,7 +65,7 @@
   header -Server
 
   @forbidden {
-    path /.vscode/* /.git/* /logs/* /Caddyfile* /.env* /composer.* /Dockerfile* /run-server.sh /.gitignore *.php
+    path /.vscode/* /.git/* /logs/* /sessions/* /Caddyfile* /.env* /composer.* /Dockerfile* /run-server.sh /.gitignore *.php
   }
 
   @statics {

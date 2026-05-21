@@ -1,6 +1,4 @@
 <?php
-  require_once(__DIR__.'/../vendor/autoload.php');
-
   $__interfaces = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/interfaces'));
   $__implements = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/implements'));
   $__errors = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/errors'));
@@ -76,18 +74,18 @@
     ) { require_once($c->getPathname()); }
   }
 
-  foreach ($__config as $ci => $c) {
-    if (
-      $c->isFile() &&
-      $c->getExtension() === 'php'
-    ) { require_once($c->getPathname()); }
-  }
-
   foreach ($__utils as $ui => $u) {
     if (
       $u->isFile() &&
       $u->getExtension() === 'php'
     ) { require_once($u->getPathname()); }
+  }
+
+  foreach ($__config as $ci => $c) {
+    if (
+      $c->isFile() &&
+      $c->getExtension() === 'php'
+    ) { require_once($c->getPathname()); }
   }
 
   unset($__interfaces);
@@ -99,6 +97,6 @@
   unset($__core);
   unset($__models);
   unset($__controllers);
-  unset($__config);
   unset($__utils);
+  unset($__config);
 ?>

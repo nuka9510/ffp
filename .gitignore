@@ -1,3 +1,5 @@
 .vscode
 logs/*
+sessions/*
 /vendor/
+composer.lock
