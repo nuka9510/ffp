@@ -1,9 +1,9 @@
 <?php
-  namespace FFP\Core;
+  namespace FFP\Route;
 
-  class Route {
+  class Http {
     /**
-     * @var array<'HEAD'|'OPTIONS'|'GET'|'POST'|'PUT'|'PATCH'|'DELETE',array<string,array{route:\FFP\Core\Utils\Route,depth:int}>>
+     * @var array<'HEAD'|'OPTIONS'|'GET'|'POST'|'PUT'|'PATCH'|'DELETE',array<string,array{route:\FFP\Route\Router,depth:int}>>
      */
     private static array $_routes = array(
       'HEAD' => array(),
@@ -24,8 +24,8 @@
     /**
      * @param array{
      *   context: \FFP\App,
-     *   request: \FFP\DTO\Request,
-     *   response: \FFP\DTO\Response
+     *   request: \FFP\DTO\Http\Request,
+     *   response: \FFP\DTO\Http\Response
      * } $args
      */
     public static function route(array $args): void {
@@ -50,8 +50,8 @@
       $route->route($args);
     }
 
-    public static function append(\FFP\Enums\Route\Method $method, string $path, \Closure|array|string $callback): \FFP\Core\Utils\Route {
-      static::$_routes[$method->value][$path]['route'] = new \FFP\Core\Utils\Route($path, $callback);
+    public static function append(\FFP\Enums\Route\Method $method, string $path, \Closure|array|string $callback): \FFP\Route\Router {
+      static::$_routes[$method->value][$path]['route'] = new \FFP\Route\Router($path, $callback);
 
       return static::$_routes[$method->value][$path]['route'];
     }

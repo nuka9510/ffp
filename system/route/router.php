@@ -1,10 +1,10 @@
 <?php
-  namespace FFP\Core\Utils;
+  namespace FFP\Route;
 
   /**
    * @property-read string $path
    */
-  class Route {
+  class Router {
     private string $_path;
 
     /**
@@ -12,10 +12,10 @@
      */
     private array $_routes = array();
 
-    private \FFP\DTO\Route\Handle $_routeHandle;
+    private \FFP\Route\Handle $_routeHandle;
 
     /**
-     * @var array<string,\FFP\DTO\Route\Handle[]>
+     * @var array<string,\FFP\Route\Handle[]>
      */
     private array $_middleware;
 
@@ -27,14 +27,14 @@
     }
 
     public function __construct(string $path, \Closure|array|string $callback) {
-      $path = \FFP\Core\Utils\Route::convertPath($path);
+      $path = \FFP\Route\Router::convertPath($path);
       $paths = ($path === '') ? array() : explode('/', $path);
 
       $this->_path = $path;
 
       foreach ($paths as $pi => $p) { array_push($this->_routes, new \FFP\DTO\Route($p)); }
 
-      $this->_routeHandle = new \FFP\DTO\Route\Handle($callback);
+      $this->_routeHandle = new \FFP\Route\Handle($callback);
     }
 
     public function depth(): int { return count($this->_routes); }
@@ -57,8 +57,8 @@
     /**
      * @param array{
      *   context: \FFP\App,
-     *   request: \FFP\DTO\Request,
-     *   response: \FFP\DTO\Response
+     *   request: \FFP\Interfaces\Route\Request,
+     *   response: \FFP\Interfaces\Route\Response
      * } $args
      */
     public function route(array $args): void {
@@ -72,8 +72,8 @@
     /**
      * @param array{
      *   context: \FFP\App,
-     *   request: \FFP\DTO\Request,
-     *   response: \FFP\DTO\Response
+     *   request: \FFP\Interfaces\Route\Request,
+     *   response: \FFP\Interfaces\Route\Response
      * } $args
      * @return array<string,mixed>
      */

@@ -64,31 +64,21 @@
 
   header -Server
 
-  @forbidden {
-    path /.vscode/* /.git/* /logs/* /sessions/* /Caddyfile* /.env* /composer.* /Dockerfile* /run-server.sh /.gitignore *.php
-  }
-
   @statics {
     path /assets/* /favicon.ico /.well-known/*
-  }
-
-  @views {
-    path /views/*
-  }
-
-  handle @forbidden {
-    respond @forbidden "Access Denied" 403
   }
 
   handle @statics {
     file_server
   }
 
-  handle @views {
-    rewrite {path}.php
+  # @views {
+  #   path /views/*
+  # }
 
-    php_server
-  }
+  # handle @views {
+  #   php_server
+  # }
 
   handle {
     rewrite /system/index.php?{query}

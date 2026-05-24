@@ -7,7 +7,7 @@
       'name' => 'PHPSESSID',
       'save_handler' => 'file',
       'save_path' => "{$_SERVER['DOCUMENT_ROOT']}/sessions",
-      'use_strict_mode ' => true,
+      'use_strict_mode' => true,
       'use_cookies' => true,
       'use_only_cookies' => true,
       'cookie_lifetime' => 0,

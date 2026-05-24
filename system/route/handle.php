@@ -1,5 +1,5 @@
 <?php
-  namespace FFP\DTO\Route;
+  namespace FFP\Route;
 
   class Handle {
     private \FFP\Enums\Route\Handle $_handle;

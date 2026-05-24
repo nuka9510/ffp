@@ -1,5 +1,5 @@
 <?php
-  namespace FFP\DTO;
+  namespace FFP\DTO\Http;
 
   /**
    * @property-read \FFP\Enums\Route\Method $method
@@ -11,9 +11,7 @@
    * @property-read ?string $referer
    * @property-read string $clientIp
    */
-  class Request {
-    private \FFP\App $_app;
-
+  class Request extends \FFP\Implements\Route\Request {
     private \FFP\Enums\Route\Method $_method;
 
     private string $_scheme;
@@ -48,17 +46,18 @@
     }
 
     public function __construct(\FFP\App $app) {
+      parent::__construct($app);
+
       try {
         $method = \FFP\Enums\Route\Method::from($_SERVER['REQUEST_METHOD']);
         $scheme = $this->____getScheme();
         $host = $_SERVER['HTTP_HOST'];
-        $path = \FFP\Core\Utils\Route::convertPath(parse_url(urldecode($_SERVER['REQUEST_URI']), PHP_URL_PATH));
+        $path = \FFP\Route\Router::convertPath(parse_url(urldecode($_SERVER['REQUEST_URI']), PHP_URL_PATH));
         $query = $_SERVER['QUERY_STRING'];
         $paths = ($path === '') ? array() : explode('/', $path);
         $referer = $this->____getReferer();
         $clientIp = $this->____getClientIp();
 
-        $this->_app = $app;
         $this->_method = $method;
         $this->_scheme = $scheme;
         $this->_host = $host;
@@ -82,7 +81,7 @@
       if (isset($referer)) {
         $host = parse_url($referer, PHP_URL_HOST);
         $port = parse_url($referer, PHP_URL_PORT);
-        $path = \FFP\Core\Utils\Route::convertPath(parse_url($referer, PHP_URL_PATH));
+        $path = \FFP\Route\Router::convertPath(parse_url($referer, PHP_URL_PATH));
 
         if (isset($port)) {
           $port = ":{$port}";

@@ -1,1 +1,1 @@
-00 00 * * * root touch /app/logs/cron.log && frankenphp php-cli /app/system/session_gc.php >> /app/logs/cron.log 2>&1
+00 00 * * * root touch /app/logs/cron.log && frankenphp php-cli /app/system/index.php /__sessoin_gc --env=.env.dev >> /app/logs/cron.log 2>&1

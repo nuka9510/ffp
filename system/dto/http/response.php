@@ -1,12 +1,10 @@
 <?php
-  namespace FFP\DTO;
+  namespace FFP\DTO\Http;
 
   /**
    * @property-read array<string,bool>[] $headers
    */
-  class Response {
-    private \FFP\App $_app;
-
+  class Response extends \FFP\Implements\Route\Response {
     /**
      * @var array<string,bool>[]
      */
@@ -18,8 +16,6 @@
         default => null,
       };
     }
-
-    public function __construct(\FFP\App $app) { $this->_app = $app; }
 
     public function setHeader(string $header, bool $replace = true): void { array_push($this->_headers, array($header, $replace)); }
 
@@ -123,7 +119,7 @@
     }
 
     public function error(\FFP\Interfaces\Http\Error $error): void {
-      http_response_code($error->httpStatus->value);
+      http_response_code($error->status->value);
 
       if ($error::class === \FFP\Errors\Http\MethodNotAllowed::class) { header('Allow: '.implode(', ', array_map(function ($m) { return $m->value; }, \FFP\Enums\Route\Method::cases()))); }
 

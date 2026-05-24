@@ -3,15 +3,15 @@
 
   /**
    * @property-read \FFP\App $context
-   * @property-read \FFP\DTO\Request $request
-   * @property-read \FFP\DTO\Response $response
+   * @property-read \FFP\Interfaces\Route\Request $request
+   * @property-read \FFP\Interfaces\Route\Response $response
    */
   class Controller {
     private \FFP\App $_context;
 
-    private \FFP\DTO\Request $_request;
+    private \FFP\Interfaces\Route\Request $_request;
 
-    private \FFP\DTO\Response $_response;
+    private \FFP\Interfaces\Route\Response $_response;
 
     private array $_params;
 
@@ -38,8 +38,8 @@
     /**
      * @param  array{
      *   context: \FFP\App,
-     *   request: \FFP\DTO\Request,
-     *   response: \FFP\DTO\Response
+     *   request: \FFP\Interfaces\Route\Request,
+     *   response: \FFP\Interfaces\Route\Response
      * } $args
      */
     public function __construct(array $args) {

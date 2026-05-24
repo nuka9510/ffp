@@ -23,6 +23,4 @@ RUN install-php-extensions \
 
 RUN php-zts composer.phar install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
 
-VOLUME /sessions
-
 ENTRYPOINT ["/bin/sh", "-c", "cron && exec ./run-server.sh --env=.env.prod"];
