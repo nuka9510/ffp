@@ -132,7 +132,6 @@
     }
 
     private function ____headerApp() {
-      \FFP\Logger::debug(print_r($this->context, true));
       foreach ($this->context->env['headers'] as $hi => $h) { header($h[0], $h[1] ?? true); }
     }
 
