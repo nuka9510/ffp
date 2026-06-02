@@ -13,7 +13,7 @@
 
     public function __get(string $name) {
       return match ($name) {
-        'context' => parent::__get('app'),
+        'context' => parent::__get('context'),
         'headers' => $this->_headers,
         default => null,
       };
@@ -132,6 +132,7 @@
     }
 
     private function ____headerApp() {
+      \FFP\Logger::debug(print_r($this->context, true));
       foreach ($this->context->env['headers'] as $hi => $h) { header($h[0], $h[1] ?? true); }
     }
 

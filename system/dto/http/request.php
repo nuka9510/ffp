@@ -34,7 +34,7 @@
 
     public function __get(string $name) {
       return match ($name) {
-        'context' => parent::__get('app'),
+        'context' => parent::__get('context'),
         'method' => $this->_method,
         'scheme' => $this->_scheme,
         'host' => $this->_host,
