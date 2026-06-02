@@ -2,6 +2,7 @@
   namespace FFP\Interfaces\Route;
 
   /**
+   * @property-read \FFP\App $context
    * @property-read ?array<string,bool>[] $headers
    */
   interface Response {

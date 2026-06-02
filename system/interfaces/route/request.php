@@ -2,6 +2,7 @@
   namespace FFP\Interfaces\Route;
 
   /**
+   * @property-read \FFP\App $context
    * @property-read ?\FFP\Enums\Route\Method $method
    * @property-read ?string $scheme
    * @property-read ?string $host
