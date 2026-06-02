@@ -2,6 +2,7 @@
   namespace FFP\DTO\Http;
 
   /**
+   * @property-read \FFP\App $context
    * @property-read \FFP\Enums\Route\Method $method
    * @property-read string $scheme
    * @property-read string $host
@@ -33,6 +34,7 @@
 
     public function __get(string $name) {
       return match ($name) {
+        'context' => parent::__get('app'),
         'method' => $this->_method,
         'scheme' => $this->_scheme,
         'host' => $this->_host,

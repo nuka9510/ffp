@@ -2,6 +2,7 @@
   namespace FFP\DTO\Http;
 
   /**
+   * @property-read \FFP\App $context
    * @property-read array<string,bool>[] $headers
    */
   class Response extends \FFP\Implements\Route\Response {
@@ -12,6 +13,7 @@
 
     public function __get(string $name) {
       return match ($name) {
+        'context' => parent::__get('app'),
         'headers' => $this->_headers,
         default => null,
       };
@@ -31,7 +33,7 @@
       $this->____headerApp();
       $this->____headerRes();
 
-      header("Content-Type: text/html; charset={$this->_app->charset}");
+      header("Content-Type: text/html; charset={$this->context->charset}");
 
       $html = '<script>';
 
@@ -66,7 +68,7 @@
         $this->____headerApp();
         $this->____headerRes();
 
-        header("Content-Type: text/html; charset={$this->_app->charset}");
+        header("Content-Type: text/html; charset={$this->context->charset}");
 
         file_put_contents('php://output', $view);
 
@@ -80,7 +82,7 @@
       $this->____headerApp();
       $this->____headerRes();
 
-      header("Content-Type: text/plain; charset={$this->_app->charset}");
+      header("Content-Type: text/plain; charset={$this->context->charset}");
 
       file_put_contents('php://output', $msg);
     }
@@ -91,7 +93,7 @@
       $this->____headerApp();
       $this->____headerRes();
 
-      header("Content-Type: application/json; charset={$this->_app->charset}");
+      header("Content-Type: application/json; charset={$this->context->charset}");
 
       file_put_contents('php://output', json_encode($res, JSON_UNESCAPED_UNICODE));
     }
@@ -111,7 +113,7 @@
       if ($attach) {
         $ext = array_slice(explode('.', $path), -1, 1)[0];
 
-        header("Content-Disposition: attachment; filename*={$this->_app->charset}''".rawurlencode(isset($fileName) ? $fileName : time()).".{$ext}");
+        header("Content-Disposition: attachment; filename*={$this->context->charset}''".rawurlencode(isset($fileName) ? $fileName : time()).".{$ext}");
         header("Content-Type: application/octet-stream;");
       } else { header("Content-Type: ".mime_content_type($path).";"); }
 
@@ -130,7 +132,7 @@
     }
 
     private function ____headerApp() {
-      foreach ($this->_app->env['headers'] as $hi => $h) { header($h[0], $h[1] ?? true); }
+      foreach ($this->context->env['headers'] as $hi => $h) { header($h[0], $h[1] ?? true); }
     }
 
     private function ____headerRes() {
@@ -158,7 +160,7 @@
 
       $this->____headerApp();
 
-      header("Content-Type: text/html; charset={$this->_app->charset}");
+      header("Content-Type: text/html; charset={$this->context->charset}");
 
       file_put_contents('php://output', $view);
     }
@@ -166,7 +168,7 @@
     private function ____errorText(\FFP\Interfaces\Http\Error $error) {
       $this->____headerApp();
 
-      header("Content-Type: text/plain; charset={$this->_app->charset}");
+      header("Content-Type: text/plain; charset={$this->context->charset}");
 
       file_put_contents('php://output', $error->getMessage());
     }
