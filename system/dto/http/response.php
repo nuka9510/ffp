@@ -11,6 +11,8 @@
      */
     private array $_headers = array();
 
+    private string $_path;
+
     public function __get(string $name) {
       return match ($name) {
         'context' => parent::__get('context'),
@@ -48,14 +50,18 @@
     }
 
     public function view(string $path, array $res = array(), bool $return = false): ?string {
-      $path = "{$_SERVER['DOCUMENT_ROOT']}/views/{$path}.php";
+      $this->_path = "{$_SERVER['DOCUMENT_ROOT']}/views/{$path}.php";
+
+      unset($path);
 
       ob_start();
 
       extract($res, EXTR_SKIP);
 
       try {
-        include($path);
+        include($this->_path);
+
+        unset($this->_path);
       } catch (\Throwable $th) { \FFP\Logger::error($th->getMessage()); }
 
       $view = ob_get_contents();
@@ -140,9 +146,13 @@
     }
 
     private function ____errorView(\FFP\Interfaces\Http\Error $error) {
-      $path = "{$_SERVER['DOCUMENT_ROOT']}/views/errors/{$error->status->value}.php";
+      $this->_path = "{$_SERVER['DOCUMENT_ROOT']}/views/errors/{$error->status->value}.php";
 
-      if (!file_exists($path)) { return $this->____errorText($error); }
+      if (!file_exists($this->_path)) {
+        unset($this->_path);
+
+        return $this->____errorText($error);
+      }
 
       ob_start();
 
@@ -151,7 +161,9 @@
       extract($res, EXTR_SKIP);
 
       try {
-        include($path);
+        include($this->_path);
+
+        unset($this->_path);
       } catch (\Throwable $th) { \FFP\Logger::error($th->getMessage()); }
 
       $view = ob_get_contents();
