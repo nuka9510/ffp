@@ -5,12 +5,12 @@
     /**
      * @var \FFP\Route\Handle[]
      */
-    private static array $_preHandle;
+    private static array $_preHandle = array();
 
     /**
      * @var \FFP\Route\Handle[]
      */
-    private static array $_postHandle;
+    private static array $_postHandle = array();
 
     public static function append(\FFP\Enums\Interceptor\Handle $handle, \Closure|array|string $callback): void {
       match ($handle) {
