@@ -1,6 +1,7 @@
 {
     "name": "nuka9510/fpw",
     "type": "project",
+    "license": "MIT",
     "require": {
         "vlucas/phpdotenv": "^5.6"
     }
