@@ -33,6 +33,16 @@
     require_once(__DIR__.'/require.php');
     require_once(__DIR__.'/app.php');
 
+    $__profile = $_SERVER['APP_PROFILE'] ?? '';
+
+    if ($__profile === '') { $__profile = null; }
+
+    $__database = __DIR__.'/../databases/'.($__profile ?? 'index').'.php';
+    
+    if (file_exists($__database)) {
+      require_once($__database);
+    } else { throw new \Exception('Database configuration file not found for profile: '.($__profile ?? '')); }
+
     if ($__is_cli) {
       require_once(__DIR__.'/../interceptors/cli.php');
       require_once(__DIR__.'/../routes/cli.php');
@@ -40,6 +50,9 @@
       require_once(__DIR__.'/../interceptors/http.php');
       require_once(__DIR__.'/../routes/http.php');
     }
+
+    unset($__profile);
+    unset($__database);
   } catch (\Throwable $th) {
     \FFP\Logger::error($th->getMessage());
 

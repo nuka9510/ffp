@@ -1,19 +1,6 @@
 <?php
   namespace FFP;
 
-  $__profile = $_SERVER['APP_PROFILE'] ?? '';
-
-  if ($__profile === '') { $__profile = null; }
-
-  $__database = __DIR__.'/../databases/'.($__profile ?? 'index').'.php';
-  
-  if (file_exists($__database)) {
-    require_once($__database);
-  } else { throw new \Exception('Database configuration file not found for profile: '.($__profile ?? '')); }
-
-  unset($__profile);
-  unset($__database);
-
   /**
    * @property-read bool $isCli
    * @property-read bool $isWorker
