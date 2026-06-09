@@ -15,9 +15,14 @@
     private \FFP\Route\Handle $_routeHandle;
 
     /**
-     * @var array<string,\FFP\Route\Handle[]>
+     * @var \FFP\Route\Handle[]
      */
-    private array $_middleware;
+    private array $_preHandle;
+
+    /**
+     * @var \FFP\Route\Handle[]
+     */
+    private array $_postHandle;
 
     public function __get(string $name) {
       return match ($name) {
@@ -62,11 +67,33 @@
      * } $args
      */
     public function route(array $args): void {
+      $_args = $this->____invokArgs($args);
       try {
+        if ($args['context']->isCli) {
+          if (!\FFP\Interceptor\Cli::preHandle($_args)) { return; }
+        } else { if (!\FFP\Interceptor\Http::preHandle($_args)) { return; } }
 
-        $this->_routeHandle->invokeHandle($this->____invokArgs($args));
+        foreach ($this->_preHandle as $phi => $ph) {
+          if (!($ph->invokeHandle($_args) ?? true)) { return; }
+        }
 
+        $this->_routeHandle->invokeHandle($_args);
+
+        if ($args['context']->isCli) {
+          \FFP\Interceptor\Cli::postHandle($_args);
+        } else { \FFP\Interceptor\Http::postHandle($_args); }
+
+        foreach ($this->_postHandle as $phi => $ph) { $ph->invokeHandle($_args); }
       } catch (\Throwable $th) { throw $th; }
+    }
+
+    public function interceptor(\FFP\Enums\Interceptor\Handle $handle, \Closure|array|string $callback): Router {
+      match ($handle) {
+        \FFP\Enums\Interceptor\Handle::PRE => array_push($this->_preHandle, new \FFP\Route\Handle($callback)),
+        \FFP\Enums\Interceptor\Handle::POST => array_push($this->_postHandle, new \FFP\Route\Handle($callback)),
+      };
+
+      return $this;
     }
 
     /**

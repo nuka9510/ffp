@@ -9,6 +9,7 @@
   $__core = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/core'));
   $__models = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../models'));
   $__controllers = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../controllers'));
+  $__interceptor = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../interceptor'));
   $__config = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../config'));
   $__utils = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../utils'));
 
@@ -82,18 +83,25 @@
     ) { require_once($c->getPathname()); }
   }
 
-  foreach ($__utils as $ui => $u) {
-    if (
-      $u->isFile() &&
-      $u->getExtension() === 'php'
-    ) { require_once($u->getPathname()); }
-  }
-
   foreach ($__config as $ci => $c) {
     if (
       $c->isFile() &&
       $c->getExtension() === 'php'
     ) { require_once($c->getPathname()); }
+  }
+
+  foreach ($__interceptor as $ii => $i) {
+    if (
+      $i->isFile() &&
+      $i->getExtension() === 'php'
+    ) { require_once($i->getPathname()); }
+  }
+
+  foreach ($__utils as $ui => $u) {
+    if (
+      $u->isFile() &&
+      $u->getExtension() === 'php'
+    ) { require_once($u->getPathname()); }
   }
 
   unset($__interfaces);
@@ -105,6 +113,7 @@
   unset($__core);
   unset($__models);
   unset($__controllers);
-  unset($__utils);
   unset($__config);
+  unset($__interceptor);
+  unset($__utils);
 ?>
