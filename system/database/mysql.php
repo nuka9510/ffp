@@ -30,7 +30,10 @@
             \FFP\Enums\Database\Transaction::W => array_push($this->_sql, 'FOR UPDATE'),
           };
 
-          if ($this->_sLock) {
+          if (
+            $this->_sLock &&
+            isset($option)
+          ) {
             match ($option) {
               \FFP\Enums\Database\Mysql\Option::NOWAIT,
               \FFP\Enums\Database\Mysql\Option::SKIP_LOCKED => array_push($this->_sql, $option->value),

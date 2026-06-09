@@ -237,11 +237,13 @@
       } else { return array(null, null, null, $this->_lastQuery); }
     }
 
+    protected function ____sql(): string { return trim(join(' ', $this->_sql)); }
+
     /**
      * @throws \PDOException|\FFP\Errors\Database\Driver
      */
     protected function ____execute(): void {
-      $sql = trim(join(' ', $this->_sql));
+      $sql = $this->____sql();
 
       try {
         $this->_stmt = $this->_pdo->prepare($sql);
