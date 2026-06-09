@@ -5,11 +5,11 @@
   $__enums = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/enums'));
   $__dto = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/dto'));
   $__database = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/database'));
+  $__interceptor = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/interceptor'));
   $__route = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/route'));
   $__core = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/core'));
   $__models = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../models'));
   $__controllers = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../controllers'));
-  $__interceptor = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../interceptor'));
   $__config = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../config'));
   $__utils = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../utils'));
 
@@ -55,6 +55,13 @@
     ) { require_once($d->getPathname()); }
   }
 
+  foreach ($__interceptor as $ii => $i) {
+    if (
+      $i->isFile() &&
+      $i->getExtension() === 'php'
+    ) { require_once($i->getPathname()); }
+  }
+
   foreach ($__route as $ri => $r) {
     if (
       $r->isFile() &&
@@ -90,13 +97,6 @@
     ) { require_once($c->getPathname()); }
   }
 
-  foreach ($__interceptor as $ii => $i) {
-    if (
-      $i->isFile() &&
-      $i->getExtension() === 'php'
-    ) { require_once($i->getPathname()); }
-  }
-
   foreach ($__utils as $ui => $u) {
     if (
       $u->isFile() &&
@@ -110,10 +110,10 @@
   unset($__enums);
   unset($__dto);
   unset($__database);
+  unset($__interceptor);
   unset($__core);
   unset($__models);
   unset($__controllers);
   unset($__config);
-  unset($__interceptor);
   unset($__utils);
 ?>

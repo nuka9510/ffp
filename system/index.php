@@ -34,8 +34,12 @@
     require_once(__DIR__.'/app.php');
 
     if ($__is_cli) {
+      require_once(__DIR__.'/../interceptors/cli.php');
       require_once(__DIR__.'/../routes/cli.php');
-    } else { require_once(__DIR__.'/../routes/http.php'); }
+    } else {
+      require_once(__DIR__.'/../interceptors/http.php');
+      require_once(__DIR__.'/../routes/http.php');
+    }
   } catch (\Throwable $th) {
     \FFP\Logger::error($th->getMessage());
 
