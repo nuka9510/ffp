@@ -15,6 +15,7 @@ FFP 프레임워크 사용을 위한 상세 문서를 제공합니다.
 
 - **[종합 개발 가이드](docs/development.md)**: 프레임워크 아키텍처 및 핵심 개발 방법 (MVC, 라우터, 인터셉터 등)
 - **[환경 설정 가이드](docs/environment.md)**: 환경 변수, 애플리케이션 및 데이터베이스 프로필 설정
+- **[Database 드라이버 지원 현황](docs/database_drivers.md)**: 사용가능한 데이터베이스 드라이버 목록
 - **[Database CRUD 가이드](docs/database_crud.md)**: 데이터베이스 드라이버를 활용한 쿼리 작성법
 - **[API 레퍼런스](docs/api_reference.md)**: 주요 클래스 및 인터페이스별 메서드/프로퍼티 요약
 - **[유틸리티 가이드](docs/utils.md)**: 페이징 등 공통 유틸리티 클래스 사용법
@@ -24,17 +25,9 @@ FFP 프레임워크 사용을 위한 상세 문서를 제공합니다.
 ## 설치 방법
 
 ### FrankenPHP 설치
-FFP를 실행하기 위해서는 **FrankenPHP** 바이너리가 필요합니다.
+FFP를 실행하기 위해서는 **FrankenPHP**가 설치되어 있어야 합니다. 설치와 관련된 자세한 내용은 공식 문서를 참고하세요.
 
-#### Linux 및 macOS
-```bash
-curl https://frankenphp.dev/install.sh | sh
-```
-
-#### Windows (PowerShell)
-```powershell
-irm https://frankenphp.dev/install.ps1 | iex
-```
+- **[FrankenPHP 공식 설치 가이드](https://frankenphp.dev/docs/#getting-started)**
 
 ### PHP-ZTS 및 의존성 설치
 워커 모드 및 최적의 성능을 위해 **PHP-ZTS** 환경이 권장됩니다. 로컬 환경에서 Docker 없이 실행할 경우, 해당 환경에서 `composer`를 통해 의존성을 설치해야 합니다.
