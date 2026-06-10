@@ -99,3 +99,22 @@ FFP 프레임워크의 주요 객체별 프로퍼티 및 메서드 요약 가이
 - `rowCount()`: 영향을 받은 행의 수 반환
 - `lastInsertId()`: 마지막으로 삽입된 ID 반환
 - `beginTransaction()`, `commit()`, `rollback()`: 트랜잭션 제어
+
+---
+
+## 7. Utils\Pagination
+데이터 페이징 처리를 위한 유틸리티 클래스입니다.
+
+### 프로퍼티 (Read-only)
+- `offset`: SQL 쿼리에서 사용할 오프셋 값 (int)
+- `rows`: 페이지당 표시할 행 수 (int)
+- `pages`: 하단에 표시할 페이지 번호 개수 (int)
+- `page`: 현재 페이지 번호 (int)
+- `totRows`: 전체 데이터 행 수 (int)
+- `startPage`: 현재 페이징 바의 시작 페이지 번호 (int)
+- `endPage`: 현재 페이징 바의 마지막 페이지 번호 (int)
+
+### 메서드
+- `__construct(array $data)`: `['rows' => int, 'pages' => int, 'page' => int]` 배열로 초기화
+- `setTotRows(int $totRows)`: 전체 행 수 설정 및 페이징 수치 계산
+- `toArray()`: 페이징 정보를 배열로 반환 (total, offset, page, startPage, endPage, pageList, prevPage, nextPage 포함)
