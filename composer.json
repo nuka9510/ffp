@@ -1,8 +1,14 @@
 {
     "name": "nuka9510/ffp",
-    "description": "FrankenPHP 워커 모드 및 MVC 아키텍처를 지원하는 커스텀 PHP 프레임워크",
+    "description": "FrankenPHP 워커 모드 및 MVC 아키텍처를 지원하는 PHP 프레임워크",
     "type": "project",
+    "keywords": ["frankenphp", "worker-mode", "mvc", "framework", "php-framework", "webframework", "mvc-framework", "mvc-pattern", "mvc-architecture", "frankenphp-worker"],
+    "homepage": "https://github.com/nuka9510/ffp",
     "license": "MIT",
+    "support": {
+        "issues": "https://github.com/nuka9510/ffp/issues",
+        "source": "https://github.com/nuka9510/ffp"
+    },
     "require": {
         "vlucas/phpdotenv": "^5.6"
     }

@@ -15,13 +15,11 @@ use FFP\Enums\Route\Method;
 use \FFP\Enums\Interceptor\Handle;
 
 // 기본 라우팅
-Http::append(Method::GET, '/test/{page:int}', [\Controllers\Index::class, 'getTest']);
+Http::append(Method::GET, '/{id:int}', [\Controllers\Index::class, 'getIndex']);
 
 // 라우트와 함께 로컬 인터셉터 정의
-Http::append(Method::GET, '/test/{page:int}', [\Controllers\Index::class, 'getTest'])
-    ->interceptor(Handle::PRE, function ($context, $request, $response) {
-        \FFP\Logger::debug('local http interceptor');
-    });
+Http::append(Method::GET, '/{id:int}', [\Controllers\Index::class, 'getIndex'])
+    ->interceptor(Handle::PRE, function ($context, $request, $response) { \FFP\Logger::debug('local http interceptor'); });
 ```
 
 #### CLI 라우팅 및 로컬 인터셉터 (`routes/cli.php`)
@@ -30,13 +28,11 @@ use FFP\Route\Cli;
 use \FFP\Enums\Interceptor\Handle;
 
 // 기본 라우팅
-Cli::append('/cli-test', function ($context, $request, $response) { \FFP\Logger::debug('CLI Command Executed'); })
+Cli::append('/', function ($context, $request, $response) { \FFP\Logger::debug('CLI Command Executed'); })
 
 // 라우트와 함께 로컬 인터셉터 정의
-Cli::append('/cli-test', function ($context, $request, $response) { \FFP\Logger::debug('CLI Command Executed'); })
-    ->interceptor(Handle::PRE, function ($context, $request, $response) {
-        \FFP\Logger::debug('local cli interceptor');
-    });
+Cli::append('/', function ($context, $request, $response) { \FFP\Logger::debug('CLI Command Executed'); })
+    ->interceptor(Handle::PRE, function ($context, $request, $response) { \FFP\Logger::debug('local cli interceptor'); });
 ```
 
 ### 1.2 전역 인터셉터 (Middleware)
@@ -46,9 +42,7 @@ Cli::append('/cli-test', function ($context, $request, $response) { \FFP\Logger:
 use \FFP\Interceptor\Http;
 use \FFP\Enums\Interceptor\Handle;
 
-Http::append(Handle::PRE, function ($context, $request, $response) {
-    \FFP\Logger::debug('global http interceptor');
-});
+Http::append(Handle::PRE, function ($context, $request, $response) { \FFP\Logger::debug('global http interceptor'); });
 ```
 
 #### CLI 전역 인터셉터 (`interceptors/cli.php`)
@@ -56,9 +50,7 @@ Http::append(Handle::PRE, function ($context, $request, $response) {
 use \FFP\Interceptor\Cli;
 use \FFP\Enums\Interceptor\Handle;
 
-Cli::append(Handle::PRE, function ($context, $request, $response) {
-    \FFP\Logger::debug('global cli interceptor');
-});
+Cli::append(Handle::PRE, function ($context, $request, $response) { \FFP\Logger::debug('global cli interceptor'); });
 ```
 
 ---
@@ -73,12 +65,12 @@ namespace Controllers;
 use FFP\Enums\Val\Type;
 
 class Index extends \FFP\Core\Controller {
-    public function getTest(int $page = 1): void {
+    public function getIndex(int $id = 1): void {
         $search = $this->getParam('search', Type::STRING, '');
         $model = $this->getModel(\Models\Index::class);
-        $data = $model->getList($page, $search);
+        $data = $model->getList($search);
         
-        $this->response->view('index', ['data' => $data, 'page' => $page]);
+        $this->response->view('index', ['data' => $data, 'id' => $id]);
     }
 }
 ```
@@ -91,7 +83,7 @@ namespace Models;
 use FFP\Enums\Database\Operator;
 
 class Index extends \FFP\Core\Model {
-    public function getList(int $page, string $search = '') {
+    public function getList(string $search = '') {
         $this->query("SELECT * FROM users");
         $this->where(Operator::AND, "status = ?", [1]);
         if ($search !== '') $this->where(Operator::AND, "name LIKE ?", ["%{$search}%"]);
@@ -106,7 +98,7 @@ class Index extends \FFP\Core\Model {
 
 ```html
 <!-- views/index.php -->
-<h1>사용자 목록 (페이지: <?= $page ?>)</h1>
+<h1><?= $id ?></h1>
 <ul>
     <?php foreach ($data as $user): ?>
         <li><?= $user['name'] ?></li>
