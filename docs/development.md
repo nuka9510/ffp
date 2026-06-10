@@ -66,11 +66,10 @@ use FFP\Enums\Val\Type;
 
 class Index extends \FFP\Core\Controller {
     public function getIndex(int $id = 1): void {
-        $search = $this->getParam('search', Type::STRING, '');
         $model = $this->getModel(\Models\Index::class);
-        $data = $model->getList($search);
+        $user = $model->getUser($id);
         
-        $this->response->view('index', ['data' => $data, 'id' => $id]);
+        $this->response->view('index', ['user' => $user]);
     }
 }
 ```
@@ -83,12 +82,12 @@ namespace Models;
 use FFP\Enums\Database\Operator;
 
 class Index extends \FFP\Core\Model {
-    public function getList(string $search = '') {
+    public function getUser(int $id) {
         $this->query("SELECT * FROM users");
-        $this->where(Operator::AND, "status = ?", [1]);
-        if ($search !== '') $this->where(Operator::AND, "name LIKE ?", ["%{$search}%"]);
+        $this->where(Operator::AND, "id = ?", [$id]);
         $this->select();
-        return $this->fetchAll();
+
+        return $this->fetch();
     }
 }
 ```
@@ -98,12 +97,7 @@ class Index extends \FFP\Core\Model {
 
 ```html
 <!-- views/index.php -->
-<h1><?= $id ?></h1>
-<ul>
-    <?php foreach ($data as $user): ?>
-        <li><?= $user['name'] ?></li>
-    <?php endforeach; ?>
-</ul>
+<h1>사용자 : <?= $user['name'] ?></h1>
 ```
 
 ---
