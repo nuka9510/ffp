@@ -43,11 +43,20 @@ composer create-project nuka9510/ffp <project-name>
 ### HTTP 서버 실행
 FrankenPHP를 사용하여 서버를 구동합니다.
 
+#### Linux / macOS
 ```bash
 # 개발 환경
 ./run-server.sh --env=.env.dev
+```
 
-# 운영 환경 (Docker)
+#### Windows
+```batch
+# 개발 환경
+run-server.bat --env=.env.dev
+```
+
+#### Docker (운영 환경)
+```bash
 docker build -t ffp-app .
 docker run -p 8081:8081 ffp-app
 ```
