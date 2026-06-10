@@ -1,6 +1,6 @@
 {
     "name": "nuka9510/ffp",
-    "description": "FrankenPHP 워커 모드 및 MVC 아키텍처를 지원하는 최적화된 커스텀 PHP 프레임워크",
+    "description": "FrankenPHP 워커 모드 및 MVC 아키텍처를 지원하는 커스텀 PHP 프레임워크",
     "type": "project",
     "license": "MIT",
     "require": {
