@@ -6,6 +6,7 @@
   <title>FFP</title>
 </head>
 <body>
-  Frankenphp Framework Project
+  Frankenphp Framework Project - <?= $id ?>
 </body>
+<script src="/assets/js/index.js"></script>
 </html>

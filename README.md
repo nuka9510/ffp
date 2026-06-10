@@ -29,11 +29,11 @@ FFP를 실행하기 위해서는 **FrankenPHP**가 설치되어 있어야 합니
 
 - **[FrankenPHP 공식 설치 가이드](https://frankenphp.dev/docs/#getting-started)**
 
-### PHP-ZTS 및 의존성 설치
-워커 모드 및 최적의 성능을 위해 **PHP-ZTS** 환경이 권장됩니다. 로컬 환경에서 Docker 없이 실행할 경우, 해당 환경에서 `composer`를 통해 의존성을 설치해야 합니다.
+### 프로젝트 생성
+Composer를 사용하여 새 프로젝트를 생성할 수 있습니다.
 
 ```bash
-php-zts composer.phar install
+composer create-project nuka9510/ffp <project-name>
 ```
 
 ---
