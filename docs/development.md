@@ -74,7 +74,7 @@ use FFP\Enums\Val\Type;
 
 class Index extends \FFP\Core\Controller {
     public function getTest(int $page = 1): void {
-        $search = $this->getParam('search', Type::STR, '');
+        $search = $this->getParam('search', Type::STRING, '');
         $model = $this->getModel(\Models\Index::class);
         $data = $model->getList($page, $search);
         
