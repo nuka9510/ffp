@@ -4,6 +4,7 @@
 [![GITHUB-VERSION][github-version]][github-version-url]
 [![PACKAGIST-VERSION][packagist-version]][packagist-version-url]
 ![GITHUB-LAST-COMMIT][github-last-commit]
+![GITHUB-CODE-SIZE][github-code-size]
 ![GITHUB-REPO-SIZE][github-repo-size]
 ![PACKAGIST-DOWNLOADS][packagist-downloads]
 ![TOP-LANGUAGE][top-language]
@@ -18,6 +19,8 @@
 [packagist-version-url]: https://packagist.org/packages/nuka9510/ffp
 
 [github-last-commit]: https://img.shields.io/github/last-commit/nuka9510/ffp?logo=github
+
+[github-code-size]: https://img.shields.io/github/languages/code-size/nuka9510/ffp?logo=github
 
 [github-repo-size]: https://img.shields.io/github/repo-size/nuka9510/ffp?logo=github
 
