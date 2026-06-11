@@ -1,5 +1,30 @@
 # FFP (FrankenPHP Framework Project)
 
+[![LICENSE][license]][license-url]
+[![GITHUB-VERSION][github-version]][github-version-url]
+[![PACKAGIST-VERSION][packagist-version]][packagist-version-url]
+![GITHUB-LAST-COMMIT][github-last-commit]
+![GITHUB-REPO-SIZE][github-repo-size]
+![PACKAGIST-DOWNLOADS][packagist-downloads]
+![TOP-LANGUAGE][top-language]
+
+[license]: https://img.shields.io/badge/license-MIT-green
+[license-url]: LICENSE
+
+[github-version]: https://img.shields.io/github/v/tag/nuka9510/ffp?logo=github
+[github-version-url]: https://github.com/nuka9510/ffp
+
+[packagist-version]: https://img.shields.io/packagist/v/nuka9510/ffp?logo=packagist
+[packagist-version-url]: https://packagist.org/packages/nuka9510/ffp
+
+[github-last-commit]: https://img.shields.io/github/last-commit/nuka9510/ffp?logo=github
+
+[github-repo-size]: https://img.shields.io/github/repo-size/nuka9510/ffp?logo=github
+
+[packagist-downloads]: https://img.shields.io/packagist/dt/nuka9510/ffp?logo=packagist
+
+[top-language]: https://img.shields.io/github/languages/top/nuka9510/ffp
+
 FFP는 **FrankenPHP** 커스텀 PHP 프레임워크입니다.
 
 ## 주요 특징
@@ -77,8 +102,3 @@ docker run -p 8081:8081 ffp-app
 # 예시: 개발 환경에서 / 경로 실행
 run-cli.bat / --env=.env.dev
 ```
-
----
-
-## 라이선스
-이 프로젝트는 MIT 라이선스를 따릅니다. 자세한 내용은 [LICENSE](LICENSE) 파일을 참조하세요.
