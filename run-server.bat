@@ -1,6 +1,8 @@
 @echo off
 setlocal enabledelayedexpansion
 
+cd /d "%~dp0"
+
 set "ENV=.env"
 
 :parse
@@ -13,13 +15,6 @@ shift
 goto parse
 
 :run
-echo [INFO] Using environment file: %ENV%
 
 php-zts composer.phar dump-autoload
-
-if %ERRORLEVEL% neq 0 (
-    echo [ERROR] Composer dump-autoload failed.
-    exit /b %ERRORLEVEL%
-)
-
 frankenphp run --config Caddyfile --envfile %ENV%

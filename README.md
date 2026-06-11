@@ -62,12 +62,20 @@ docker run -p 8081:8081 ffp-app
 ```
 
 ### CLI 명령 실행
-`system/index.php`를 통해 CLI 라우트에 정의된 명령을 실행합니다.
+생성된 실행 스크립트를 통해 CLI 라우트에 정의된 명령을 실행합니다.
 
+#### Linux / macOS
 ```bash
-# 실행 형식: frankenphp php-cli system/index.php [PATH] --env=[ENV_FILE]
-# 예시: 개발 환경에서 /cli-test 경로 실행
-frankenphp php-cli system/index.php /cli-test --env=.env.dev
+# 실행 형식: ./run-cli.sh [PATH] --env=[ENV_FILE]
+# 예시: 개발 환경에서 / 경로 실행
+./run-cli.sh / --env=.env.dev
+```
+
+#### Windows
+```batch
+# 실행 형식: run-cli.bat [PATH] --env=[ENV_FILE]
+# 예시: 개발 환경에서 / 경로 실행
+run-cli.bat / --env=.env.dev
 ```
 
 ---
