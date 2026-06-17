@@ -57,6 +57,11 @@ FFP를 실행하기 위해서는 **FrankenPHP**가 설치되어 있어야 합니
 
 - **[FrankenPHP 공식 설치 가이드](https://frankenphp.dev/docs/#getting-started)**
 
+### Composer 설치
+FFP 프로젝트 생성 및 의존성 관리를 위해 **Composer**가 필요합니다. 설치 방법은 공식 문서를 참고하세요.
+
+- **[Composer 공식 설치 가이드](https://getcomposer.org/download/)**
+
 ### 프로젝트 생성
 Composer를 사용하여 새 프로젝트를 생성할 수 있습니다.
 
