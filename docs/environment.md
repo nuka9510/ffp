@@ -34,7 +34,7 @@ $env = array(
     ),
     'session' => array(
         'name' => 'PHPSESSID',
-        'save_handler' => 'file',
+        'save_handler' => 'files',
         'save_path' => "{$_SERVER['DOCUMENT_ROOT']}/sessions",
         // ... 기타 세션 옵션
     )

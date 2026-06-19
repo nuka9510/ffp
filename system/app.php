@@ -148,7 +148,7 @@
         ) { $options['gc_probability'] = 0; }
 
         if (
-          $options['save_handler'] === 'file' &&
+          $options['save_handler'] === 'files' &&
           !is_dir($options['save_path'])
         ) { mkdir($options['save_path']); }
 
