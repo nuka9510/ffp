@@ -5,7 +5,7 @@
     ),
     'session' => array(
       'name' => 'PHPSESSID',
-      'save_handler' => 'file',
+      'save_handler' => 'files',
       'save_path' => "{$_SERVER['DOCUMENT_ROOT']}/sessions",
       'use_strict_mode' => true,
       'use_cookies' => true,
