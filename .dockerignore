@@ -1,0 +1,11 @@
+.git
+.gitignore
+Dockerfile
+.dockerignore
+docs
+README.md
+.vscode
+logs/*
+sessions/*
+/vendor/
+composer.lock
