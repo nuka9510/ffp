@@ -37,6 +37,12 @@
 
     if ($__profile === '') { $__profile = null; }
 
+    $__config = __DIR__.'/../config/'.($__profile ?? 'index').'.php';
+    
+    if (file_exists($__config)) {
+      require_once($__config);
+    } else { throw new \Exception('Configuration file not found for profile: '.($__profile ?? '')); }
+
     $__database = __DIR__.'/../databases/'.($__profile ?? 'index').'.php';
     
     if (file_exists($__database)) {
@@ -52,6 +58,7 @@
     }
 
     unset($__profile);
+    unset($__config);
     unset($__database);
   } catch (\Throwable $th) {
     \FFP\Logger::error($th->getMessage());
