@@ -8,9 +8,9 @@
   $__interceptor = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/interceptor'));
   $__route = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/route'));
   $__core = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/core'));
+  $__utils = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../utils'));
   $__models = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../models'));
   $__controllers = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../controllers'));
-  $__utils = new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__.'/../utils'));
 
   foreach ($__interfaces as $ii => $i) {
     if (
@@ -75,6 +75,13 @@
     ) { require_once($c->getPathname()); }
   }
 
+  foreach ($__utils as $ui => $u) {
+    if (
+      $u->isFile() &&
+      $u->getExtension() === 'php'
+    ) { require_once($u->getPathname()); }
+  }
+
   foreach ($__models as $mi => $m) {
     if (
       $m->isFile() &&
@@ -89,13 +96,6 @@
     ) { require_once($c->getPathname()); }
   }
 
-  foreach ($__utils as $ui => $u) {
-    if (
-      $u->isFile() &&
-      $u->getExtension() === 'php'
-    ) { require_once($u->getPathname()); }
-  }
-
   unset($__interfaces);
   unset($__implements);
   unset($__errors);
@@ -104,7 +104,7 @@
   unset($__database);
   unset($__interceptor);
   unset($__core);
+  unset($__utils);
   unset($__models);
   unset($__controllers);
-  unset($__utils);
 ?>
