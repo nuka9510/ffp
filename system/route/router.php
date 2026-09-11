@@ -1,143 +1,69 @@
 <?php
   namespace FFP\Route;
 
-  /**
-   * @property-read string $path
-   */
-  class Router {
-    private string $_path;
+  require_once(__DIR__ . '/route.php');
 
-    /**
-     * @var \FFP\DTO\Route[]
-     */
-    private array $_routes = array();
+  class Router extends \League\Route\Router {
+    public function __construct(?\FastRoute\RouteCollector $routeCollector = null) {
+      parent::__construct($routeCollector);
 
-    private \FFP\Route\Handle $_routeHandle;
-
-    /**
-     * @var \FFP\Route\Handle[]
-     */
-    private array $_preHandle = array();
-
-    /**
-     * @var \FFP\Route\Handle[]
-     */
-    private array $_postHandle = array();
-
-    public function __get(string $name) {
-      return match ($name) {
-        'path' => $this->_path,
-        default => null,
-      };
+      $this->addPatternMatcher('int', '[0-9]+');
+      $this->addPatternMatcher('integer', '[0-9]+');
+      $this->addPatternMatcher('string', '[^/]+');
+      $this->addPatternMatcher('float', '[0-9]+(?:\.[0-9]+)?');
+      $this->addPatternMatcher('double', '[0-9]+(?:\.[0-9]+)?');
     }
 
-    public function __construct(string $path, \Closure|array|string $callback) {
-      $path = \FFP\Route\Router::convertPath($path);
-      $paths = ($path === '') ? array() : explode('/', $path);
+    public function map(string|array $method, string $path, callable|array|string|\Psr\Http\Server\RequestHandlerInterface $handler): \FFP\Route\Route {
+      $path = static::normalizePath($path);
+      $route = new \FFP\Route\Route($method, $path, $handler);
 
-      $this->_path = $path;
+      $this->routes[] = $route;
+      $this->routesPrepared = false;
 
-      foreach ($paths as $pi => $p) { array_push($this->_routes, new \FFP\DTO\Route($p)); }
-
-      $this->_routeHandle = new \FFP\Route\Handle($callback);
+      return $route;
     }
 
-    public function depth(): int { return count($this->_routes); }
+    public function compile(): void {
+      if ($this->routesPrepared) { return; }
 
-    /**
-     * @param string[] $paths
-     */
-    public function match(array $paths): bool {
-      $match = true;
-
-      foreach ($paths as $pi => $p) {
-        $match = $this->_routes[$pi]->match($p);
-
-        if (!$match) { break; }
+      while (!empty($this->groups)) {
+        $group = array_shift($this->groups);
+        $group();
       }
 
-      return $match;
-    }
+      $this->buildNameIndex();
 
-    /**
-     * @param array{
-     *   context: \FFP\App,
-     *   request: \FFP\Interfaces\Route\Request,
-     *   response: \FFP\Interfaces\Route\Response
-     * } $args
-     */
-    public function route(array $args): void {
-      $_args = $this->____invokArgs($args);
+      $routes = array_merge(array_values($this->routes), array_values($this->namedRoutes));
 
-      try {
-        if ($args['context']->isCli) {
-          if (!\FFP\Interceptor\Cli::preHandle($_args)) { return; }
-        } else { if (!\FFP\Interceptor\Http::preHandle($_args)) { return; } }
-
-        foreach ($this->_preHandle as $phi => $ph) {
-          if (!($ph->invokeHandle($_args) ?? true)) { return; }
-        }
-
-        $this->_routeHandle->invokeHandle($_args);
-      } finally {
-        try {
-          if ($args['context']->isCli) {
-            \FFP\Interceptor\Cli::postHandle($_args);
-          } else { \FFP\Interceptor\Http::postHandle($_args); }
-        } catch (\Throwable $th) { \FFP\Logger::error($th->getMessage()); }
-
-        foreach ($this->_postHandle as $phi => $ph) {
-          try {
-            $ph->invokeHandle($_args);
-          } catch (\Throwable $th) { \FFP\Logger::error($th->getMessage()); }
-        }
+      foreach ($routes as $route) {
+        $this->routeCollector->addRoute($route->getMethod(), $this->parseRoutePath($route->getPath()), $route);
       }
+
+      $this->routesPrepared = true;
+      $this->routesData = $this->routeCollector->getData();
     }
 
-    public function interceptor(\FFP\Enums\Interceptor\Handle $handle, \Closure|array|string $callback): Router {
-      match ($handle) {
-        \FFP\Enums\Interceptor\Handle::PRE => array_push($this->_preHandle, new \FFP\Route\Handle($callback)),
-        \FFP\Enums\Interceptor\Handle::POST => array_push($this->_postHandle, new \FFP\Route\Handle($callback)),
-      };
+    public function matchRoute(string $method, string $path): array {
+      if (!$this->routesPrepared) {
+        $this->compile();
+      }
 
-      return $this;
+      $dispatcher = new \FastRoute\Dispatcher\GroupCountBased($this->routesData);
+      $uri = ($path === '' || $path === '/') ? '/' : '/' . trim($path, '/');
+
+      return $dispatcher->dispatch($method, $uri);
     }
 
-    /**
-     * @param array{
-     *   context: \FFP\App,
-     *   request: \FFP\Interfaces\Route\Request,
-     *   response: \FFP\Interfaces\Route\Response
-     * } $args
-     * @return array<string,mixed>
-     */
-    private function ____invokArgs(array $args): array {
-      $routes = array_filter(
-        $this->_routes,
-        function ($r) { return $r->isArg(); }
-      );
-      $keys = array_values(
-        array_map(
-          function ($r) { return $r->name; },
-          $routes
-        )
-      );
-      $values = array_values(
-        array_map(
-          function ($i) use ($args, $routes) {
-            $type = $routes[$i]->type;
-
-            if (isset($type)) {
-              return $routes[$i]->type->setType($args['request']->paths[$i]);
-            } else { return $args['request']->paths[$i]; }
-          },
-          array_keys($routes)
-        )
-      );
-
-      return array_merge(array_combine($keys, $values), $args);
+    public static function convertPath(string $path): string {
+      return preg_replace('/^\/|\/$/', '', $path);
     }
 
-    public static function convertPath(string $path): string { return preg_replace('/^\/|\/$/', '', $path); }
+    public static function normalizePath(string $path): string {
+      // Support old FFP regex syntax: /{<regex>name} -> /{name:regex}
+      $path = preg_replace('/{<([^>]+)>(\w+)}/', '{$2:$1}', $path);
+
+      return ($path === '' || $path === '/') ? '/' : '/' . trim($path, '/');
+    }
   }
 ?>

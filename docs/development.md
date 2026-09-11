@@ -17,6 +17,14 @@ use \FFP\Enums\Interceptor\Handle;
 // 기본 라우팅
 Http::append(Method::GET, '/{id:int}', [\Controllers\Index::class, 'getIndex']);
 
+// League Route 단축 메서드 사용 가능
+Http::get('/users', [\Controllers\Index::class, 'getIndex']);
+
+// 라우트 그룹 정의
+Http::group('/api', function ($group) {
+    $group->get('/users', [\Controllers\Index::class, 'getIndex']);
+});
+
 // 라우트와 함께 로컬 인터셉터 정의
 Http::append(Method::GET, '/{id:int}', [\Controllers\Index::class, 'getIndex'])
     ->interceptor(Handle::PRE, function ($context, $request, $response) { \FFP\Logger::debug('local http interceptor'); });

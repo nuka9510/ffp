@@ -1,14 +1,22 @@
 <?php
   namespace FFP\Route;
 
+  require_once(__DIR__ . '/router.php');
+  require_once(__DIR__ . '/route.php');
+
   class Cli {
-    /**
-     * @var array<string,array{route:\FFP\Route\Router,depth:int}>
-     */
-    private static array $_routes = array();
+    private static ?\FFP\Route\Router $_router = null;
+
+    public static function getRouter(): \FFP\Route\Router {
+      if (static::$_router === null) {
+        static::$_router = new \FFP\Route\Router();
+      }
+
+      return static::$_router;
+    }
 
     public static function init(): void {
-      foreach (static::$_routes as $rk => &$r) { $r['depth'] = $r['route']->depth(); }
+      static::getRouter()->compile();
     }
 
     /**
@@ -19,31 +27,34 @@
      * } $args
      */
     public static function route(array $args): void {
-      $routes = array_filter(
-        static::$_routes,
-        function ($r) use ($args) { return $r['depth'] === count($args['request']->paths); }
-      );
-      $route = null;
+      $path = $args['request']->path;
 
-      foreach ($routes as $ri => $r) {
-        if (!$r['route']->match($args['request']->paths)) { continue; }
+      $match = static::getRouter()->matchRoute('CLI', $path);
 
-        $route = $r['route'];
-
-        break;
+      if ($match[0] !== \FastRoute\Dispatcher::FOUND) {
+        throw new \FFP\Errors\Cli\NotFound("Route not found. path: /{$args['request']->path}");
       }
 
-      if (!isset($route)) { throw new \FFP\Errors\Cli\NotFound("Route not found. path: /{$args['request']->path}"); }
+      /** @var \FFP\Route\Route $route */
+      $route = $match[1];
+      $vars = $match[2];
 
-      \FFP\Logger::info("route - /{$route->path}");
+      $logPath = '/' . ltrim($route->getPath(), '/');
+      \FFP\Logger::info("route - {$logPath}");
 
-      $route->route($args);
+      $route->route($args, $vars);
     }
 
-    public static function append(string $path, \Closure|array|string $callback): \FFP\Route\Router {
-      static::$_routes[$path]['route'] = new \FFP\Route\Router($path, $callback);
+    public static function append(string $path, \Closure|array|string $callback): \FFP\Route\Route {
+      return static::getRouter()->map('CLI', $path, $callback);
+    }
 
-      return static::$_routes[$path]['route'];
+    public static function map(string $path, \Closure|array|string $callback): \FFP\Route\Route {
+      return static::getRouter()->map('CLI', $path, $callback);
+    }
+
+    public static function group(string $prefix, callable $group): \League\Route\RouteGroup {
+      return static::getRouter()->group($prefix, $group);
     }
   }
 

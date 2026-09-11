@@ -52,16 +52,31 @@ FFP 프레임워크의 주요 객체별 프로퍼티 및 메서드 요약 가이
 
 ## 4. Router 및 인터셉터 관련 객체
 
+FFP는 **League Route** (`league/route`) 라이브러리를 기반으로 라우팅을 처리합니다.
+
 ### FFP\Route\Router
-개별 라우트 설정을 담당하는 객체입니다.
+`League\Route\Router`를 확장한 라우터 객체입니다. FastRoute 기반의 라우팅 컴파일 및 매칭, 그룹화, 커스텀 패턴 매칭을 제공합니다.
+
+- `map(string $method, string $path, $handler)`: 라우트를 등록하고 `FFP\Route\Route` 인스턴스를 반환합니다.
+- `get()`, `post()`, `put()`, `patch()`, `delete()`, `head()`, `options()`: HTTP 메서드별 등록 메서드
+- `group(string $prefix, callable $group)`: 라우트 그룹을 정의합니다.
+- `convertPath(string $path)`: 경로의 앞뒤 슬래시를 제거하여 정규화합니다.
+
+### FFP\Route\Route
+`League\Route\Route`를 확장한 개별 라우트 객체입니다. 로컬 인터셉터와 핸들러 호출을 지원합니다.
 
 - `interceptor(Handle $handle, \Closure|array|string $callback)`: 특정 라우트에 로컬 인터셉터를 추가합니다.
+- `middleware(MiddlewareInterface $middleware)`: PSR-15 미들웨어를 추가합니다.
+- `setName(string $name)`: 라우트 이름을 지정합니다.
 
 ### FFP\Route\Http / FFP\Route\Cli
 라우팅을 관리하는 정적 관리자 객체입니다.
 
-- `append(Method $method, string $path, $callback)` (Http): HTTP 라우트를 등록합니다.
+- `append(Method|string $method, string $path, $callback)` (Http): HTTP 라우트를 등록합니다.
+- `get()`, `post()`, `put()`, `patch()`, `delete()`, `head()`, `options()` (Http): HTTP 메서드별 등록
+- `group(string $prefix, callable $group)` (Http, Cli): 라우트 그룹을 등록합니다.
 - `append(string $path, $callback)` (Cli): CLI 라우트를 등록합니다.
+- `getRouter()`: 내부 `FFP\Route\Router` 인스턴스를 반환합니다.
 
 ### FFP\Interceptor\Http / FFP\Interceptor\Cli
 전역 인터셉터를 관리하는 객체입니다.
