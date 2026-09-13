@@ -49,14 +49,6 @@
       require_once($__database);
     } else { throw new \Exception('Database configuration file not found for profile: '.($__profile ?? '')); }
 
-    if ($__is_cli) {
-      require_once(__DIR__.'/../interceptors/cli.php');
-      require_once(__DIR__.'/../routes/cli.php');
-    } else {
-      require_once(__DIR__.'/../interceptors/http.php');
-      require_once(__DIR__.'/../routes/http.php');
-    }
-
     unset($__profile);
     unset($__config);
     unset($__database);
@@ -69,6 +61,20 @@
   if ($__flag) {
     $app = new \FFP\App($__is_cli, $__is_worker);
 
+    $__route = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(__DIR__.'/route'));
+
+    foreach ($__route as $ri => $r) {
+      if (
+        $r->isFile() &&
+        $r->getExtension() === 'php'
+      ) { require_once($r->getPathname()); }
+    }
+
+    if ($__is_cli) {
+      require_once(__DIR__.'/../routes/cli.php');
+    } else { require_once(__DIR__.'/../routes/http.php'); }
+
+    unset($__route);
     unset($__is_cli);
     unset($__is_worker);
 

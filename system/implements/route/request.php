@@ -15,5 +15,7 @@
     }
 
     public function __construct(\FFP\App $app) { $this->_app = $app; }
+
+    protected function ____convertPath(string $path): string { return preg_replace('/^\/|\/$/', '', $path); }
   }
 ?>

@@ -1,6 +1,8 @@
 <?php
   namespace FFP;
 
+  use \FFP\Route;
+
   /**
    * @property-read bool $isCli
    * @property-read bool $isWorker
@@ -30,6 +32,8 @@
      */
     private array $_env;
 
+    private ?\Psr\Http\Message\ServerRequestInterface $_request;
+
     public function __get(string $name) {
       return match ($name) {
         'isCli' => $this->_isCli,
@@ -38,6 +42,7 @@
         'charset' => $this->_charset,
         'xss' => $this->_xss,
         'env' => $this->_env,
+        'request' => $this->_request,
         default => null,
       };
     }
@@ -56,10 +61,7 @@
         $this->_charset = $_SERVER['APP_CHARSET'] ?? 'UTF-8';
         $this->_xss = ($_SERVER['APP_XSS'] ?? 'off') === 'on';
         $this->_env = $GLOBALS['env'] ?? array();
-
-        if ($this->_isCli) {
-          \FFP\Route\Cli::init();
-        } else { \FFP\Route\Http::init(); }
+        $this->_request = null;
       } catch (\Throwable $th) { throw $th; }
     }
 
@@ -79,16 +81,8 @@
       $this->____sessionStart();
       $this->____DBDriverRefresh();
 
-      $res = new \FFP\DTO\Cli\Response($this);
-
       try {
-        $req = new \FFP\DTO\Cli\Request($this);
 
-        \FFP\Route\Cli::route(array(
-          'context' => $this,
-          'request' => $req,
-          'response' => $res
-        ));
       } catch (\Throwable $th) {
         \FFP\Logger::error($th->getMessage());
       } finally {
@@ -102,37 +96,23 @@
       $this->____sessionStart();
       $this->____DBDriverRefresh();
 
-      $res = new \FFP\DTO\Http\Response($this);
-
       try {
-        $req = new \FFP\DTO\Http\Request($this);
+        $this->_request = \Laminas\Diactoros\ServerRequestFactory::fromGlobals($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 
-        \FFP\Route\Http::route(array(
-          'context' => $this,
-          'request' => $req,
-          'response' => $res
-        ));
-      } catch (\Throwable $th) {
-        $error = match ($th::class) {
-          \FFP\Errors\Http\Unauthorized::class => $th,
-          \FFP\Errors\Http\Forbidden::class => $th,
-          \FFP\Errors\Http\NotFound::class => $th,
-          \FFP\Errors\Http\MethodNotAllowed::class => $th,
-          default => new \FFP\Errors\Http\InternalServerError(
-            array(
-              'message' => $th->getMessage(),
-              'code' => $th->getCode(),
-              'previous' => $th->getPrevious()
-            ),
-            \FFP\Enums\Http\Error::VIEW
-          ),
+        $match = Route\Http\ROUTER->match($this->_request);
+
+        $response = match ($match->getStatus()) {
+          \League\Route\MatchStatus::Found => Route\Http\ROUTER->dispatch($this->_request),
+          \League\Route\MatchStatus::NotFound => $match->notFound(),
+          \League\Route\MatchStatus::MethodNotAllowed => $match->getAllowedMethods(),
+          \League\Route\MatchStatus::ConditionNotMet => $match->getRoute(),
         };
+      } catch (\Throwable $th) {
 
-        \FFP\Logger::error($error->getMessage());
-
-        $res->error($error);
       } finally {
         $this->____DBDriverReset();
+
+        $this->_request = null;
 
         session_write_close();
       }
@@ -164,6 +144,10 @@
 
     private function ____DBDriverReset(): void {
       foreach ($this->_DBDrivers as $dk => $d) { $d->reset(); }
+    }
+
+    private function ____notFound() {
+      throw new \FFP\Errors\Response\NotFound('Route not found. path: /'.ltrim($this->_request->getUri()->getPath(), '/'));
     }
   }
 ?>

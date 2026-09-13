@@ -1,62 +1,71 @@
 <?php
-  namespace FFP\Route;
+  namespace FFP\Route\Cli;
 
-  require_once(__DIR__ . '/router.php');
-  require_once(__DIR__ . '/route.php');
+  const ROUTER = new \League\Route\Router(),
+  CONTAINER = new \League\Container\Container(),
+  STRATEGY = new \League\Route\Strategy\ApplicationStrategy();
 
-  class Cli {
-    private static ?\FFP\Route\Router $_router = null;
+  CONTAINER
+    ->add(\FFP\Core\Controller::class)
+    ->addArgument($app);
 
-    public static function getRouter(): \FFP\Route\Router {
-      if (static::$_router === null) {
-        static::$_router = new \FFP\Route\Router();
-      }
+  STRATEGY->setContainer(CONTAINER);
 
-      return static::$_router;
-    }
+  ROUTER->setStrategy(STRATEGY);
 
-    public static function init(): void {
-      static::getRouter()->compile();
-    }
+  // class Cli {
+  //   private static ?\FFP\Route\Router $_router = null;
 
-    /**
-     * @param array{
-     *   context: \FFP\App,
-     *   request: \FFP\DTO\Cli\Request,
-     *   response: \FFP\DTO\Cli\Response
-     * } $args
-     */
-    public static function route(array $args): void {
-      $path = $args['request']->path;
+  //   public static function getRouter(): \FFP\Route\Router {
+  //     if (static::$_router === null) {
+  //       static::$_router = new \FFP\Route\Router();
+  //     }
 
-      $match = static::getRouter()->matchRoute('CLI', $path);
+  //     return static::$_router;
+  //   }
 
-      if ($match[0] !== \FastRoute\Dispatcher::FOUND) {
-        throw new \FFP\Errors\Cli\NotFound("Route not found. path: /{$args['request']->path}");
-      }
+  //   public static function init(): void {
+  //     static::getRouter()->compile();
+  //   }
 
-      /** @var \FFP\Route\Route $route */
-      $route = $match[1];
-      $vars = $match[2];
+  //   /**
+  //    * @param array{
+  //    *   context: \FFP\App,
+  //    *   request: \FFP\DTO\Cli\Request,
+  //    *   response: \FFP\DTO\Cli\Response
+  //    * } $args
+  //    */
+  //   public static function route(array $args): void {
+  //     $path = $args['request']->path;
 
-      $logPath = '/' . ltrim($route->getPath(), '/');
-      \FFP\Logger::info("route - {$logPath}");
+  //     $match = static::getRouter()->matchRoute('CLI', $path);
 
-      $route->route($args, $vars);
-    }
+  //     if ($match[0] !== \FastRoute\Dispatcher::FOUND) {
+  //       throw new \FFP\Errors\Cli\NotFound("Route not found. path: /{$args['request']->path}");
+  //     }
 
-    public static function append(string $path, \Closure|array|string $callback): \FFP\Route\Route {
-      return static::getRouter()->map('CLI', $path, $callback);
-    }
+  //     /** @var \FFP\Route\Route $route */
+  //     $route = $match[1];
+  //     $vars = $match[2];
 
-    public static function map(string $path, \Closure|array|string $callback): \FFP\Route\Route {
-      return static::getRouter()->map('CLI', $path, $callback);
-    }
+  //     $logPath = '/' . ltrim($route->getPath(), '/');
+  //     \FFP\Logger::info("route - {$logPath}");
 
-    public static function group(string $prefix, callable $group): \League\Route\RouteGroup {
-      return static::getRouter()->group($prefix, $group);
-    }
-  }
+  //     $route->route($args, $vars);
+  //   }
 
-  Cli::append('/__session_gc', function (\FFP\App $context, \FFP\DTO\Cli\Request $request, \FFP\DTO\Cli\Response $response) { session_gc(); });
+  //   public static function append(string $path, \Closure|array|string $callback): \FFP\Route\Route {
+  //     return static::getRouter()->map('CLI', $path, $callback);
+  //   }
+
+  //   public static function map(string $path, \Closure|array|string $callback): \FFP\Route\Route {
+  //     return static::getRouter()->map('CLI', $path, $callback);
+  //   }
+
+  //   public static function group(string $prefix, callable $group): \League\Route\RouteGroup {
+  //     return static::getRouter()->group($prefix, $group);
+  //   }
+  // }
+
+  ROUTER->get('/__session_gc', function (\Psr\Http\Message\ServerRequestInterface $request) { session_gc(); });
 ?>

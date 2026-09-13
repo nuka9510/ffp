@@ -23,13 +23,13 @@
 
     public function setHeader(string $header, bool $replace = true): void { array_push($this->_headers, array($header, $replace)); }
 
-    public function redirect(string $path, \FFP\Enums\Http\Status $status = \FFP\Enums\Http\Status::SEE_OTHER): void {
+    public function redirect(string $path, \FFP\Enums\Response\Status $status = \FFP\Enums\Response\Status::SEE_OTHER): void {
       http_response_code($status->value);
 
       header("Location: {$path}");
     }
 
-    public function goBack(?string $msg, \FFP\Enums\Http\Status $status = \FFP\Enums\Http\Status::FORBIDDEN): void {
+    public function goBack(?string $msg, \FFP\Enums\Response\Status $status = \FFP\Enums\Response\Status::FORBIDDEN): void {
       http_response_code($status->value);
 
       $this->____headerApp();
@@ -69,7 +69,7 @@
       ob_end_clean();
 
       if (!$return) {
-        http_response_code(\FFP\Enums\Http\Status::OK->value);
+        http_response_code(\FFP\Enums\Response\Status::OK->value);
 
         $this->____headerApp();
         $this->____headerRes();
@@ -83,7 +83,7 @@
     }
 
     public function text(string $msg): void {
-      http_response_code(\FFP\Enums\Http\Status::OK->value);
+      http_response_code(\FFP\Enums\Response\Status::OK->value);
 
       $this->____headerApp();
       $this->____headerRes();
@@ -94,7 +94,7 @@
     }
 
     public function json(array $res = array()): void {
-      http_response_code(\FFP\Enums\Http\Status::OK->value);
+      http_response_code(\FFP\Enums\Response\Status::OK->value);
 
       $this->____headerApp();
       $this->____headerRes();
@@ -106,7 +106,7 @@
 
     public function file(string $path, bool $attach = false, ?string $fileName = null): void {
       if (!isset($path)) {
-        $this->error(new \FFP\Errors\Http\NotFound(array('message' => 'File not found.'), \FFP\Enums\Http\Error::TEXT));
+        $this->error(new \FFP\Errors\Response\NotFound('File not found.'));
 
         return;
       }
@@ -126,15 +126,15 @@
       readfile($path);
     }
 
-    public function error(\FFP\Interfaces\Http\Error $error): void {
-      http_response_code($error->status->value);
+    public function error(\FFP\Interfaces\Response\Error $error): void {
+      // http_response_code($error->status->value);
 
-      if ($error::class === \FFP\Errors\Http\MethodNotAllowed::class) { header('Allow: '.implode(', ', array_map(function ($m) { return $m->value; }, \FFP\Enums\Route\Method::cases()))); }
+      // if ($error::class === \FFP\Errors\Response\MethodNotAllowed::class) { header('Allow: '.implode(', ', array_map(function ($m) { return $m->value; }, \FFP\Enums\Response\Method::cases()))); }
 
-      match ($error->type) {
-        \FFP\Enums\Http\Error::VIEW => $this->____errorView($error),
-        \FFP\Enums\Http\Error::TEXT => $this->____errorText($error),
-      };
+      // match ($error->type) {
+      //   \FFP\Enums\Response\Error::HTML => $this->____errorView($error),
+      //   \FFP\Enums\Response\Error::TEXT => $this->____errorText($error),
+      // };
     }
 
     private function ____headerApp() {
@@ -145,44 +145,44 @@
       foreach ($this->_headers as $hi => $h) { header($h[0], $h[1]); }
     }
 
-    private function ____errorView(\FFP\Interfaces\Http\Error $error) {
-      $this->_path = "{$_SERVER['DOCUMENT_ROOT']}/views/errors/{$error->status->value}.php";
+    // private function ____errorView(\FFP\Interfaces\Http\Error $error) {
+    //   $this->_path = "{$_SERVER['DOCUMENT_ROOT']}/views/errors/{$error->status->value}.php";
 
-      if (!file_exists($this->_path)) {
-        unset($this->_path);
+    //   if (!file_exists($this->_path)) {
+    //     unset($this->_path);
 
-        return $this->____errorText($error);
-      }
+    //     return $this->____errorText($error);
+    //   }
 
-      ob_start();
+    //   ob_start();
 
-      $res = array('message' => $error->getMessage());
+    //   $res = array('message' => $error->getMessage());
 
-      extract($res, EXTR_SKIP);
+    //   extract($res, EXTR_SKIP);
 
-      try {
-        include($this->_path);
+    //   try {
+    //     include($this->_path);
 
-        unset($this->_path);
-      } catch (\Throwable $th) { \FFP\Logger::error($th->getMessage()); }
+    //     unset($this->_path);
+    //   } catch (\Throwable $th) { \FFP\Logger::error($th->getMessage()); }
 
-      $view = ob_get_contents();
+    //   $view = ob_get_contents();
 
-      ob_end_clean();
+    //   ob_end_clean();
 
-      $this->____headerApp();
+    //   $this->____headerApp();
 
-      header("Content-Type: text/html; charset={$this->context->charset}");
+    //   header("Content-Type: text/html; charset={$this->context->charset}");
 
-      file_put_contents('php://output', $view);
-    }
+    //   file_put_contents('php://output', $view);
+    // }
 
-    private function ____errorText(\FFP\Interfaces\Http\Error $error) {
-      $this->____headerApp();
+    // private function ____errorText(\FFP\Interfaces\Http\Error $error) {
+    //   $this->____headerApp();
 
-      header("Content-Type: text/plain; charset={$this->context->charset}");
+    //   header("Content-Type: text/plain; charset={$this->context->charset}");
 
-      file_put_contents('php://output', $error->getMessage());
-    }
+    //   file_put_contents('php://output', $error->getMessage());
+    // }
   }
 ?>

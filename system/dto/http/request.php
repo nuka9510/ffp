@@ -54,7 +54,7 @@
         $method = \FFP\Enums\Route\Method::from($_SERVER['REQUEST_METHOD']);
         $scheme = $this->____getScheme();
         $host = $_SERVER['HTTP_HOST'];
-        $path = \FFP\Route\Router::convertPath(parse_url(urldecode($_SERVER['REQUEST_URI']), PHP_URL_PATH));
+        $path = $this->____convertPath(parse_url(urldecode($_SERVER['REQUEST_URI']), PHP_URL_PATH));
         $query = $_SERVER['QUERY_STRING'];
         $paths = ($path === '') ? array() : explode('/', $path);
         $referer = $this->____getReferer();
@@ -83,7 +83,7 @@
       if (isset($referer)) {
         $host = parse_url($referer, PHP_URL_HOST);
         $port = parse_url($referer, PHP_URL_PORT);
-        $path = \FFP\Route\Router::convertPath(parse_url($referer, PHP_URL_PATH));
+        $path = $this->____convertPath(parse_url($referer, PHP_URL_PATH));
 
         if (isset($port)) {
           $port = ":{$port}";

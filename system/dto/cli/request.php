@@ -25,7 +25,7 @@
       parent::__construct($app);
 
       try {
-        $path = \FFP\Route\Router::convertPath(parse_url(urldecode($_SERVER['argv'][1]), PHP_URL_PATH));
+        $path = $this->____convertPath(parse_url(urldecode($_SERVER['argv'][1]), PHP_URL_PATH));
         $paths = ($path === '') ? array() : explode('/', $path);
 
         $this->_path = $path;

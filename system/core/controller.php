@@ -35,18 +35,15 @@
       };
     }
 
-    /**
-     * @param  array{
-     *   context: \FFP\App,
-     *   request: \FFP\Interfaces\Route\Request,
-     *   response: \FFP\Interfaces\Route\Response
-     * } $args
-     */
-    public function __construct(array $args) {
-      $this->_context = $args['context'];
-      $this->_request = $args['request'];
-      $this->_response = $args['response'];
-      $this->_params = $args['request']->method->getParams();
+    public function __construct(\FFP\App $app) {
+      $this->_context = $app;
+      $this->_request = $app->isCli
+        ? new \FFP\DTO\Cli\Request($app)
+        : new \FFP\DTO\Http\Request($app);
+      $this->_response = $app->isCli
+        ? new \FFP\DTO\Cli\Response($app)
+        : new \FFP\DTO\Http\Response($app);
+      $this->_params = $this->_request->method->getParams();
       $this->_files = $_FILES;
     }
 
