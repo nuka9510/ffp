@@ -3,8 +3,10 @@
 
   enum Status: int {
     case OK = 200;
+    case MOVED_PERMANENTLY = 301;
     case FOUND = 302;
     case SEE_OTHER = 303;
+    case PERMANENT_REDIRECT = 308;
     case UNAUTHORIZED = 401;
     case FORBIDDEN = 403;
     case NOT_FOUND = 404;

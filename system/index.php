@@ -79,19 +79,21 @@
     unset($__is_worker);
 
     try {
-      $app->boot();
+      require_once(__DIR__.'/../index.php');
     } catch (\Throwable $th) {
       \FFP\Logger::error($th->getMessage());
 
       $__flag = false;
     }
 
-    if ($__flag) {
-      unset($__flag);
+    if ($app->isBoot) {
+      if ($__flag) {
+        unset($__flag);
 
-      if ($app->isWorker) {
-        while (frankenphp_handle_request([$app, 'requestHandle'])) { gc_collect_cycles(); }
-      } else { $app->requestHandle(); }
+        if ($app->isWorker) {
+          while (frankenphp_handle_request([$app, 'requestHandle'])) { gc_collect_cycles(); }
+        } else { $app->requestHandle(); }
+      }
     }
 
     $app->shutdown();
